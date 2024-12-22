@@ -10,10 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "member_email_unique", columnNames = {"email"}),
         @UniqueConstraint(name = "member_nickname_unique", columnNames = {"nickname"}),
@@ -46,4 +50,17 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Department department;
+
+    public static Member create(String email, String nickname, String studentId, String phoneNumber,
+                                Gender gender, Membership membership, Department department) {
+        return Member.builder()
+                .email(email)
+                .nickname(nickname)
+                .studentId(studentId)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .membership(membership)
+                .department(department)
+                .build();
+    }
 }
