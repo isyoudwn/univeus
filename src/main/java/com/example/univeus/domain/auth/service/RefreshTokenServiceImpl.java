@@ -1,7 +1,6 @@
 package com.example.univeus.domain.auth.service;
 
 import com.example.univeus.domain.auth.repository.RefreshTokenRepository;
-import com.example.univeus.domain.auth.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
