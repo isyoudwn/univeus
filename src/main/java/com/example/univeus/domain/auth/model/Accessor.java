@@ -24,4 +24,8 @@ public class Accessor {
     public static Accessor of(AccessorRole accessRole, Long memberId) {
         return new Accessor(accessRole, memberId);
     }
+
+    public Boolean isMember() {
+        return accessorRole == AccessorRole.MEMBER;
+    }
 }
