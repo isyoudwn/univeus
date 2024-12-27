@@ -1,8 +1,10 @@
 package com.example.univeus.domain.auth.model;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public class Accessor {
     private static final Long GUEST_ID = 0L;
 

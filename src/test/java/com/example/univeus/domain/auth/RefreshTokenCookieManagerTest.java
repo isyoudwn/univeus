@@ -1,24 +1,25 @@
 package com.example.univeus.domain.auth;
 
-import static com.example.univeus.common.exception.ErrorCode.REFRESH_TOKEN_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.REFRESH_TOKEN_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.univeus.domain.auth.exception.TokenException;
 import com.example.univeus.domain.auth.service.RefreshTokenService;
 import com.example.univeus.domain.auth.service.RefreshTokenTestService;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseCookie;
 
-class RefreshTokenExtractorTest {
-    private RefreshTokenExtractor refreshTokenExtractor;
+class RefreshTokenCookieManagerTest {
+    private RefreshTokenCookieManager refreshTokenCookieManager;
 
     @BeforeEach
     void setUp() {
         RefreshTokenService refreshTokenService = new RefreshTokenTestService();
-        refreshTokenExtractor = new RefreshTokenExtractor(refreshTokenService);
+        refreshTokenCookieManager = new RefreshTokenCookieManager(refreshTokenService);
     }
 
     @Test
@@ -30,10 +31,10 @@ class RefreshTokenExtractorTest {
         };
 
         // when
-        String actualTokenValue = refreshTokenExtractor.extractToken(cookies);
+        String actualTokenValue = refreshTokenCookieManager.extractToken(cookies);
 
         // then
-        Assertions.assertEquals("validToken", actualTokenValue);
+        assertEquals("validToken", actualTokenValue);
     }
 
     @Test
@@ -46,11 +47,11 @@ class RefreshTokenExtractorTest {
 
         // when
         TokenException tokenException = assertThrows(TokenException.class, () -> {
-            refreshTokenExtractor.extractToken(cookies);
+            refreshTokenCookieManager.extractToken(cookies);
         });
 
         // then
-        assertEquals(REFRESH_TOKEN_NOT_FOUND, tokenException.getErrorCode());
+        assertEquals(REFRESH_TOKEN_NOT_FOUND, tokenException.getResponseMessage());
     }
 
     @Test
@@ -63,10 +64,27 @@ class RefreshTokenExtractorTest {
 
         // when
         TokenException tokenException = assertThrows(TokenException.class, () -> {
-            refreshTokenExtractor.extractToken(cookies);
+            refreshTokenCookieManager.extractToken(cookies);
         });
 
         // then
-        assertEquals(REFRESH_TOKEN_NOT_FOUND, tokenException.getErrorCode());
+        assertEquals(REFRESH_TOKEN_NOT_FOUND, tokenException.getResponseMessage());
+    }
+
+    @Test
+    void ResponseCookie를_생성한다() {
+        // given
+        String cookieValue = "testCookieValue";
+        Long COOKIE_MAX_AGE = ((60 * 60) * 24) * 14L;
+
+        // when
+        ResponseCookie responseCookie = refreshTokenCookieManager.createCookie(cookieValue);
+
+        // then
+        assertEquals("/", responseCookie.getPath());
+        assertEquals("none", responseCookie.getSameSite());
+        assertEquals(COOKIE_MAX_AGE, responseCookie.getMaxAge().getSeconds());
+        assertTrue(responseCookie.isHttpOnly());
+        assertTrue(responseCookie.isSecure());
     }
 }

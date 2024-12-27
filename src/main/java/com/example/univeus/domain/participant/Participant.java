@@ -1,7 +1,7 @@
 package com.example.univeus.domain.participant;
 
 import com.example.univeus.domain.meeting.Post;
-import com.example.univeus.domain.member.Member;
+import com.example.univeus.domain.member.model.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

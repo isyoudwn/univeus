@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.univeus.common.config.JwtProperties;
 import com.example.univeus.common.config.KeyConfig;
+import com.example.univeus.domain.auth.dto.AccessToken;
+import com.example.univeus.domain.auth.dto.UserTokens;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.Clock;
 import java.time.ZoneId;
@@ -76,5 +78,17 @@ class TokenProviderTest {
 
         // then
         Assertions.assertThat(actualSubject).isEqualTo(expectedSubject);
+    }
+
+    @Test
+    void acess_token과_refresh_token을_생성한다() {
+        // given
+        String memberId = "1L";
+
+        // when
+        UserTokens userTokens = tokenProvider.generateTokens(memberId);
+
+        // then
+        assertNotNull(userTokens);
     }
 }

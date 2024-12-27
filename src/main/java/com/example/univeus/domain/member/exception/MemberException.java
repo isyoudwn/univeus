@@ -1,14 +1,13 @@
-package com.example.univeus.domain.auth.exception;
+package com.example.univeus.domain.member.exception;
 
 import com.example.univeus.common.response.ResponseMessage;
 import lombok.Getter;
 
 @Getter
-public class AuthException extends RuntimeException {
-
+public class MemberException extends RuntimeException {
     private final ResponseMessage responseMessage;
 
-    public AuthException(ResponseMessage responseMessage) {
+    public MemberException(ResponseMessage responseMessage) {
         super(responseMessage.getMessage());
         this.responseMessage = responseMessage;
     }

@@ -1,6 +1,6 @@
 package com.example.univeus.domain.auth;
 
-import static com.example.univeus.common.exception.ErrorCode.*;
+import static com.example.univeus.common.response.ResponseMessage.*;
 
 import com.example.univeus.domain.auth.exception.TokenException;
 import org.springframework.stereotype.Component;

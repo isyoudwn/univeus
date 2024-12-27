@@ -1,6 +1,6 @@
 package com.example.univeus.domain.auth;
 
-import com.example.univeus.common.exception.ErrorCode;
+import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.exception.AuthException;
 import com.example.univeus.domain.auth.model.Accessor;
 import org.aspectj.lang.JoinPoint;
@@ -18,7 +18,7 @@ public class MemberOnlyChecker {
 
         for (Object arg : args) {
             if (arg instanceof Accessor accessor && !accessor.isMember()) {
-                throw new AuthException(ErrorCode.AUTH_BAD_REQUEST);
+                throw new AuthException(ResponseMessage.AUTH_BAD_REQUEST);
             }
         }
     }

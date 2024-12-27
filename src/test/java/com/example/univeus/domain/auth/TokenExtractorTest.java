@@ -1,6 +1,6 @@
 package com.example.univeus.domain.auth;
 
-import static com.example.univeus.common.exception.ErrorCode.ACCESS_TOKEN_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.ACCESS_TOKEN_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.univeus.domain.auth.exception.TokenException;
@@ -40,7 +40,7 @@ class TokenExtractorTest {
                 });
 
         // then
-        assertEquals(ACCESS_TOKEN_NOT_FOUND, tokenException.getErrorCode());
+        assertEquals(ACCESS_TOKEN_NOT_FOUND, tokenException.getResponseMessage());
     }
 
 }
