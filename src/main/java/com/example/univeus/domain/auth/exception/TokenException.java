@@ -1,14 +1,14 @@
 package com.example.univeus.domain.auth.exception;
 
-import com.example.univeus.common.exception.ErrorCode;
+import com.example.univeus.common.response.ResponseMessage;
 import lombok.Getter;
 
 @Getter
 public class TokenException extends AuthException {
-    private final ErrorCode errorCode;
+    private final ResponseMessage responseMessage;
 
-    public TokenException(ErrorCode errorCode) {
-        super(errorCode);
-        this.errorCode = errorCode;
+    public TokenException(ResponseMessage responseMessage) {
+        super(responseMessage);
+        this.responseMessage = responseMessage;
     }
 }

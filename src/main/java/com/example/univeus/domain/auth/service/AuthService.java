@@ -1,7 +1,9 @@
 package com.example.univeus.domain.auth.service;
 
-import com.example.univeus.domain.auth.model.RefreshToken;
+import com.example.univeus.presentation.auth.dto.response.AuthResponse.ResponseTokens;
 
 public interface AuthService {
-    void saveRefreshToken(RefreshToken refreshToken);
+    ResponseTokens reissueTokens(String refreshToken);
+
+    ResponseTokens issueTokens(Long memberId);
 }

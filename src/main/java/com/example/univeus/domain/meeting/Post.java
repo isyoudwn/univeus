@@ -1,7 +1,7 @@
 package com.example.univeus.domain.meeting;
 
-import com.example.univeus.domain.member.Gender;
-import com.example.univeus.domain.member.Member;
+import com.example.univeus.domain.member.model.Gender;
+import com.example.univeus.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

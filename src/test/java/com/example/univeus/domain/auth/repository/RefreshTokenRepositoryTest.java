@@ -3,10 +3,10 @@ package com.example.univeus.domain.auth.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.univeus.domain.auth.model.RefreshToken;
-import com.example.univeus.domain.member.Department;
-import com.example.univeus.domain.member.Gender;
-import com.example.univeus.domain.member.Member;
-import com.example.univeus.domain.member.Membership;
+import com.example.univeus.domain.member.model.Department;
+import com.example.univeus.domain.member.model.Gender;
+import com.example.univeus.domain.member.model.Member;
+import com.example.univeus.domain.member.model.Membership;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

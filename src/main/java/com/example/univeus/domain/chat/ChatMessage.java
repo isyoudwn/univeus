@@ -1,6 +1,6 @@
 package com.example.univeus.domain.chat;
 
-import com.example.univeus.domain.member.Member;
+import com.example.univeus.domain.member.model.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

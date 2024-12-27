@@ -3,6 +3,8 @@ package com.example.univeus.domain.auth;
 import com.example.univeus.common.config.JwtProperties;
 import com.example.univeus.common.config.KeyConfig;
 import com.example.univeus.common.util.TimeUtil;
+import com.example.univeus.domain.auth.dto.AccessToken;
+import com.example.univeus.domain.auth.dto.UserTokens;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -17,10 +19,22 @@ public class TokenProvider {
     private final Clock clock;
     private final KeyConfig keyConfig;
 
+    private static final String EMPTY_SUBJECT = "";
+
     public TokenProvider(JwtProperties jwtProperties, Clock clock, KeyConfig keyConfig) {
         this.jwtProperties = jwtProperties;
         this.clock = clock;
         this.keyConfig = keyConfig;
+    }
+
+    public UserTokens generateTokens(String subject) {
+        String accessToken = createToken(subject, jwtProperties.getAccessExpireMs());
+        String refreshToken = createToken(EMPTY_SUBJECT, jwtProperties.getRefreshExpireMs());
+
+        return UserTokens.of(
+                AccessToken.of(accessToken),
+                refreshToken
+        );
     }
 
     public String createToken(String subject, Long expireMs) {

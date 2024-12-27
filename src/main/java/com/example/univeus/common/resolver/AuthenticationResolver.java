@@ -1,10 +1,10 @@
 package com.example.univeus.common.resolver;
 
 
-import static com.example.univeus.common.exception.ErrorCode.*;
+import static com.example.univeus.common.response.ResponseMessage.*;
 
 import com.example.univeus.common.annotation.Auth;
-import com.example.univeus.domain.auth.RefreshTokenExtractor;
+import com.example.univeus.domain.auth.RefreshTokenCookieManager;
 import com.example.univeus.domain.auth.TokenExtractor;
 import com.example.univeus.domain.auth.TokenProvider;
 import com.example.univeus.domain.auth.exception.AuthException;
@@ -24,7 +24,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthenticationResolver implements HandlerMethodArgumentResolver {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenExtractor refreshTokenExtractor;
+    private final RefreshTokenCookieManager refreshTokenCookieManager;
     private final TokenExtractor tokenExtractor;
 
     @Override
@@ -42,7 +42,7 @@ public class AuthenticationResolver implements HandlerMethodArgumentResolver {
         }
 
         try {
-            String refreshTokenValue = refreshTokenExtractor.extractToken(request.getCookies());
+            String refreshTokenValue = refreshTokenCookieManager.extractToken(request.getCookies());
             String accessTokenValue = tokenExtractor.extractToken(request.getHeader("Authorization"));
 
             // 토큰을 검증에서 expired 되면 throw 한다
