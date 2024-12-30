@@ -42,5 +42,4 @@ class TokenExtractorTest {
         // then
         assertEquals(ACCESS_TOKEN_NOT_FOUND, tokenException.getResponseMessage());
     }
-
 }

@@ -8,4 +8,3 @@ import org.springframework.context.annotation.Import;
 @Import(TestAuthConfig.class)
 public abstract class BaseControllerTest {
 }
-

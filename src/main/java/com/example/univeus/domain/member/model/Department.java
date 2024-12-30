@@ -11,7 +11,8 @@ public enum Department {
     SOFTWARE_AND_BUSINESS("소프트웨어경영대학"),
     PURE_SCIENCE("융합과학대학"),
     ENGINEERING("창의공과대학"),
-    TOURISM_AND_CULTURE("관광문화대학");
+    TOURISM_AND_CULTURE("관광문화대학"),
+    NONE("소속없음");
 
 
     private final String department;

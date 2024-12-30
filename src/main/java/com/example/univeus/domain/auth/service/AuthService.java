@@ -6,4 +6,6 @@ public interface AuthService {
     ResponseTokens reissueTokens(String refreshToken);
 
     ResponseTokens issueTokens(Long memberId);
+
+    ResponseTokens createOrLogin(String uri);
 }

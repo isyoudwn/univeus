@@ -1,5 +1,9 @@
 package com.example.univeus.domain.member.model;
 
+import static com.example.univeus.common.response.ResponseMessage.*;
+
+import com.example.univeus.common.response.ResponseMessage;
+import com.example.univeus.domain.member.exception.MemberException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,16 +36,15 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String studentId;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -64,5 +67,21 @@ public class Member {
                 .membership(membership)
                 .department(department)
                 .build();
+    }
+
+    public static Member createByEmail(String email) {
+        return Member.builder()
+                .email(email).build();
+    }
+
+    // check
+    public void checkProceed() {
+        // TODO : 인증인가 에서도 사용해야함
+        if (phoneNumber == null) {
+            throw new MemberException(MEMBER_NOT_AUTHORIZED_PHONE);
+        }
+        if (department == null || nickname == null || studentId == null || gender == null) {
+            throw new MemberException(MEMBER_NOT_AUTHORIZED_PROFILE);
+        }
     }
 }

@@ -14,11 +14,16 @@ public enum ResponseMessage {
     ACCESS_TOKEN_NOT_FOUND("AUTH-002", "access token이 존재하지 않습니다."),
     AUTH_BAD_REQUEST("AUTH-003", "접근 권한이 없습니다."),
     REISSUE_TOKEN_SUCCESS("AUTH-004", "토큰 재발급을 성공했습니다."),
+    LOGIN_SUCCESS("AUTH-005", "로그인을 성공했습니다."),
+    LOGIN_FAIL("AUTH-006", "로그인에 실패했습니다"),
 
     /**
      * member
      */
-    MEMBER_NOT_FOUND("MEMBER-001", "존재하지 않는 유저입니다.");
+    MEMBER_NOT_FOUND("MEMBER-001", "존재하지 않는 유저입니다."),
+    MEMBER_NOT_AUTHORIZED_PHONE("MEMBER-002", "휴대폰 본인인증을 완료하지 않은 유저입니다."),
+    MEMBER_NOT_AUTHORIZED_PROFILE("MEMBER_003", "프로필 등록을 완료하지 않은 유저입니다.");
+
 
     private final String code;
     private final String message;

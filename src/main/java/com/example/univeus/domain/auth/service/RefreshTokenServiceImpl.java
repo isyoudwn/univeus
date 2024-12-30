@@ -20,12 +20,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenCookieManager cookieManager;
 
     @Override
-    public Boolean isExist(String id) {
-        return refreshTokenRepository.findById(id)
-                .isPresent();
-    }
-
-    @Override
     public RefreshToken findById(String tokenValue) {
         return refreshTokenRepository.findById(tokenValue)
                 .orElseThrow(() -> new TokenException(ResponseMessage.REFRESH_TOKEN_NOT_FOUND));

@@ -1,5 +1,8 @@
 package com.example.univeus.presentation.auth.controller;
 
+import static com.example.univeus.common.response.ResponseMessage.LOGIN_SUCCESS;
+import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PHONE;
+import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PROFILE;
 import static com.example.univeus.common.response.ResponseMessage.REFRESH_TOKEN_NOT_FOUND;
 import static com.example.univeus.common.response.ResponseMessage.REISSUE_TOKEN_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +14,9 @@ import com.example.univeus.domain.auth.dto.AccessToken;
 import com.example.univeus.domain.auth.service.AuthService;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.presentation.BaseControllerTest;
+import com.example.univeus.presentation.auth.dto.request.AuthRequest;
 import com.example.univeus.presentation.auth.dto.response.AuthResponse.ResponseTokens;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +40,9 @@ class AuthControllerTest extends BaseControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     static ResponseCookie createResponseCookie() {
@@ -92,6 +101,90 @@ class AuthControllerTest extends BaseControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message").value(REFRESH_TOKEN_NOT_FOUND.getMessage()))
                     .andExpect(jsonPath("$.code").value(REFRESH_TOKEN_NOT_FOUND.getCode()));
+        }
+    }
+
+    @Nested
+    @DisplayName("로그인 테스트")
+    class Login {
+        @Test
+        void 로그인을_성공한다() throws Exception {
+            // given
+            String googleIdToken = "testGoogleIdToken";
+            AccessToken accessToken = AccessToken.of("accessTokenValue");
+            ResponseTokens responseTokens = ResponseTokens.of(accessToken, createResponseCookie());
+            AuthRequest.Login loginRequest = AuthRequest.Login.of(googleIdToken);
+            when(authService.createOrLogin(any())).thenReturn(responseTokens);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)));
+
+            // then
+            resultActions
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(HttpHeaders.SET_COOKIE, responseTokens.refreshToken().toString()))
+                    .andExpect(jsonPath("$.code").value(LOGIN_SUCCESS.getCode()))
+                    .andExpect(jsonPath("$.message").value(LOGIN_SUCCESS.getMessage()))
+                    .andExpect(jsonPath("$.data.accessToken").value("accessTokenValue"));
+        }
+
+        @Test
+        void DB에_존재하지_않는_유저가_로그인_했을_경우_예외가_발생한다() throws Exception {
+            // given
+            String googleIdToken = "testGoogleIdToken";
+            AuthRequest.Login loginRequest = AuthRequest.Login.of(googleIdToken);
+            when(authService.createOrLogin(any())).thenThrow(new MemberException(MEMBER_NOT_AUTHORIZED_PHONE));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)));
+
+            // then
+            resultActions
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(MEMBER_NOT_AUTHORIZED_PHONE.getCode()))
+                    .andExpect(jsonPath("$.message").value(MEMBER_NOT_AUTHORIZED_PHONE.getMessage()));
+        }
+
+        @Test
+        void 전화번호_인증을_마치지_않았을_경우_예외가_발생한다() throws Exception {
+            // given
+            String googleIdToken = "testGoogleIdToken";
+            AuthRequest.Login loginRequest = AuthRequest.Login.of(googleIdToken);
+            when(authService.createOrLogin(any())).thenThrow(new MemberException(MEMBER_NOT_AUTHORIZED_PHONE));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)));
+
+            // then
+            resultActions
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(MEMBER_NOT_AUTHORIZED_PHONE.getCode()))
+                    .andExpect(jsonPath("$.message").value(MEMBER_NOT_AUTHORIZED_PHONE.getMessage()));
+        }
+
+        @Test
+        void 프로필_등록을_마치지_않았을_경우_예외가_발생한다() throws Exception {
+            // given
+            String googleIdToken = "testGoogleIdToken";
+            AuthRequest.Login loginRequest = AuthRequest.Login.of(googleIdToken);
+            when(authService.createOrLogin(any())).thenThrow(new MemberException(MEMBER_NOT_AUTHORIZED_PROFILE));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)));
+
+            // then
+            resultActions
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(MEMBER_NOT_AUTHORIZED_PROFILE.getCode()))
+                    .andExpect(jsonPath("$.message").value(MEMBER_NOT_AUTHORIZED_PROFILE.getMessage()));
         }
     }
 }
