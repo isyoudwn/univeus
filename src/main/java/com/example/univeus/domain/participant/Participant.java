@@ -1,6 +1,6 @@
 package com.example.univeus.domain.participant;
 
-import com.example.univeus.domain.meeting.Post;
+import com.example.univeus.domain.meeting.model.Post;
 import com.example.univeus.domain.member.model.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
