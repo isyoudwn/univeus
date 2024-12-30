@@ -1,6 +1,8 @@
 package com.example.univeus.domain.auth.service;
 
 
+import com.example.univeus.domain.auth.GoogleServerLogin.Response;
+import com.example.univeus.domain.auth.SocialLogin;
 import com.example.univeus.domain.auth.TokenProvider;
 import com.example.univeus.domain.auth.dto.UserTokens;
 import com.example.univeus.domain.auth.model.RefreshToken;
@@ -20,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenService refreshTokenService;
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
+    private final SocialLogin socialLogin;
 
     @Override
     public ResponseTokens reissueTokens(String tokenValue) {
@@ -39,5 +42,16 @@ public class AuthServiceImpl implements AuthService {
         ResponseCookie refreshToken = refreshTokenService.createResponseToken(userTokens.refreshToken());
 
         return ResponseTokens.of(userTokens.accessToken(), refreshToken);
+    }
+
+    @Override
+    public ResponseTokens createOrLogin(String googleIdToken) {
+        Response googleProfile = socialLogin.getGoogleProfile(googleIdToken);
+        String email = googleProfile.email();
+        Member member = memberService.createOrFindMemberByEmail(email);
+
+        member.checkProceed();
+
+        return issueTokens(member.getId());
     }
 }

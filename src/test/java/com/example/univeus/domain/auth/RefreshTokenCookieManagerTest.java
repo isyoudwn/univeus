@@ -4,23 +4,26 @@ import static com.example.univeus.common.response.ResponseMessage.REFRESH_TOKEN_
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import com.example.univeus.domain.auth.exception.TokenException;
-import com.example.univeus.domain.auth.service.RefreshTokenService;
-import com.example.univeus.domain.auth.service.RefreshTokenTestService;
+import com.example.univeus.domain.auth.repository.RefreshTokenRepository;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseCookie;
 
+@ExtendWith(MockitoExtension.class)
 class RefreshTokenCookieManagerTest {
-    private RefreshTokenCookieManager refreshTokenCookieManager;
 
-    @BeforeEach
-    void setUp() {
-        RefreshTokenService refreshTokenService = new RefreshTokenTestService();
-        refreshTokenCookieManager = new RefreshTokenCookieManager(refreshTokenService);
-    }
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
+
+    @InjectMocks
+    private RefreshTokenCookieManager refreshTokenCookieManager;
 
     @Test
     void 유효한_토큰을_추출한다() {
@@ -29,6 +32,7 @@ class RefreshTokenCookieManagerTest {
                 new Cookie("test", "testDummy"),
                 new Cookie("refresh-token", "validToken"),
         };
+        when(refreshTokenRepository.existsById(any())).thenReturn(true);
 
         // when
         String actualTokenValue = refreshTokenCookieManager.extractToken(cookies);
@@ -44,6 +48,7 @@ class RefreshTokenCookieManagerTest {
                 new Cookie("test", "testDummy"),
                 new Cookie("refresh-token", "notExist")
         };
+        when(refreshTokenRepository.existsById(any())).thenReturn(false);
 
         // when
         TokenException tokenException = assertThrows(TokenException.class, () -> {

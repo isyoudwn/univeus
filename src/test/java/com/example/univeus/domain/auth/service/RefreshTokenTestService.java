@@ -8,10 +8,6 @@ import com.example.univeus.domain.member.model.Membership;
 import org.springframework.http.ResponseCookie;
 
 public class RefreshTokenTestService implements RefreshTokenService {
-    @Override
-    public Boolean isExist(String id) {
-        return !id.equals("notExist");
-    }
 
     @Override
     public ResponseCookie createResponseToken(String tokenValue) {

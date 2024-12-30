@@ -21,4 +21,22 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
+
+    @Override
+    public Member createOrFindMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseGet(() -> saveMember(email));
+    }
+
+    @Override
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
+
+    @Override
+    public Member saveMember(String email) {
+        Member member = Member.createByEmail(email);
+        return memberRepository.save(member);
+    }
 }

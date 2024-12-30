@@ -5,8 +5,6 @@ import com.example.univeus.domain.member.model.Member;
 import org.springframework.http.ResponseCookie;
 
 public interface RefreshTokenService {
-    Boolean isExist(String id);
-
     ResponseCookie createResponseToken(String tokenValue);
 
     RefreshToken save(String tokenValue, Member member);

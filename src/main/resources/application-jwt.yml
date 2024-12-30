@@ -1,4 +1,4 @@
 jwt:
-  issuer: testIssuer
-  expire-ms: 10000
+  access-expire-ms: 10000
   refresh-expire-ms: 10000
+  issuer: "testIssuer"
