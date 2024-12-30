@@ -1,4 +1,4 @@
-package com.example.univeus.domain.meeting;
+package com.example.univeus.domain.meeting.model;
 
 
 import lombok.RequiredArgsConstructor;

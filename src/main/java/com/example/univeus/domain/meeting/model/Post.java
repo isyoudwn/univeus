@@ -1,4 +1,4 @@
-package com.example.univeus.domain.meeting;
+package com.example.univeus.domain.meeting.model;
 
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;

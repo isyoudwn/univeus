@@ -1,4 +1,4 @@
-package com.example.univeus.domain.chat;
+package com.example.univeus.domain.chat.model;
 
 import com.example.univeus.domain.member.model.Member;
 import jakarta.persistence.Entity;
@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatMember {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Member member;
+    private Integer id;
 
     @ManyToOne
     private ChatRoom chatRoom;
+
+    @ManyToOne
+    private Member sender;
 }
