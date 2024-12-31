@@ -1,12 +1,18 @@
 package com.example.univeus.domain.auth.service;
 
+import static com.example.univeus.common.response.ResponseMessage.*;
+import static com.example.univeus.common.response.ResponseMessage.DEPARTMENT_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.GENDER_NOT_FOUND;
 import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PHONE;
 import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PROFILE;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 import com.example.univeus.common.response.ResponseMessage;
-import com.example.univeus.domain.auth.GoogleServerLogin;
 import com.example.univeus.domain.auth.GoogleServerLogin.Response;
 import com.example.univeus.domain.auth.SocialLogin;
 import com.example.univeus.domain.auth.TokenProvider;
@@ -18,8 +24,10 @@ import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.model.Membership;
 import com.example.univeus.domain.member.service.MemberService;
+import com.example.univeus.presentation.auth.dto.request.AuthRequest.Nickname;
+import com.example.univeus.presentation.auth.dto.request.AuthRequest.Profile;
 import com.example.univeus.presentation.auth.dto.response.AuthResponse.ResponseTokens;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -225,6 +233,115 @@ class AuthServiceImplTest {
 
             // then
             assertEquals(MEMBER_NOT_AUTHORIZED_PROFILE, memberException.getResponseMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("프로필을 등록한다")
+    class TestRegisterProfile {
+
+        @Test
+        void 프로필_등록을_성공한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문대학",
+                    "WOMAN",
+                    "testStudentId"
+            );
+
+            // when
+            authService.registerProfile(memberId, profile);
+
+            // then
+            assertDoesNotThrow(() ->
+                    authService.registerProfile(memberId, profile));
+        }
+
+        @Test
+        void 성별이_올바르지_않게_입력될_경우_프로필_등록을_실패한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문대학",
+                    "WO",
+                    "testStudentId"
+            );
+
+            // when
+            MemberException memberException = assertThrows(
+                    MemberException.class, () ->
+                            authService.registerProfile(memberId, profile));
+
+            // then
+            assertEquals(GENDER_NOT_FOUND, memberException.getResponseMessage());
+        }
+
+        @Test
+        void 학과가_올바르지_않게_입력될_경우_프로필_등록을_실패한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문",
+                    "WOMAN",
+                    "testStudentId"
+            );
+
+            // when
+            MemberException memberException = assertThrows(
+                    MemberException.class, () ->
+                            authService.registerProfile(memberId, profile));
+
+            // then
+            assertEquals(DEPARTMENT_NOT_FOUND, memberException.getResponseMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("닉네임 중복체크를 수행한다.")
+    class TestNicknameDuplicated {
+
+        Member member = new Member(
+                1L,
+                "testEmail",
+                "testNickName",
+                null,
+                "testPhoneNumber",
+                null,
+                null,
+                null
+        );
+
+        @Test
+        void 닉네임이_중복되지_않는다() {
+            // given
+            Nickname nicknameRequest = Nickname.of("newNickname");
+            when(memberService.findByNickname(any())).thenReturn(Optional.empty());
+
+
+
+            // when then
+            assertDoesNotThrow(() ->
+                    authService.checkNicknameDuplicated(nicknameRequest)
+            );
+        }
+
+        @Test
+        void 닉네임이_중복된다면_예외를_던진다() {
+            // given
+            Nickname nicknameRequest = Nickname.of("testNickname");
+            when(memberService.findByNickname(any())).thenReturn(Optional.ofNullable(member));
+
+            // when
+            MemberException memberException = assertThrows(MemberException.class,
+                    () -> authService.checkNicknameDuplicated(nicknameRequest)
+            );
+
+            // then
+            Assertions.assertEquals(MEMBER_NICKNAME_DUPLICATED, memberException.getResponseMessage());
         }
     }
 }

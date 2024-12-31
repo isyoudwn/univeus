@@ -2,9 +2,12 @@ package com.example.univeus.domain.member.service;
 
 import static com.example.univeus.common.response.ResponseMessage.*;
 
+import com.example.univeus.domain.member.model.Department;
+import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.repository.MemberRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +26,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Member createOrFindMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseGet(() -> saveMember(email));
+                .orElseGet(() ->
+                        memberRepository.save(Member.createByEmail(email)));
     }
 
     @Override
@@ -35,8 +40,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Member saveMember(String email) {
         Member member = Member.createByEmail(email);
         return memberRepository.save(member);
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(Long memberId, Department department, Gender gender, String nickName, String studentId) {
+        Member member = findById(memberId);
+        member.updateProfile(department, gender, nickName, studentId);
+    }
+
+    @Override
+    public Optional<Member> findByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname);
     }
 }
