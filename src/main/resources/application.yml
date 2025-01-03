@@ -25,7 +25,8 @@ spring:
   profiles:
     include:
       - jwt
-      - google
+      - coolSMS
+      - redis
 logging:
   level:
     org.hibernate.SQL: DEBUG

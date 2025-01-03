@@ -1,5 +1,8 @@
 package com.example.univeus.domain.member.model;
 
+import static com.example.univeus.common.response.ResponseMessage.*;
+
+import com.example.univeus.domain.member.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,4 +19,13 @@ public enum Department {
 
 
     private final String department;
+
+    public static Department of(String department) {
+        for (Department depart : Department.values()) {
+            if (depart.department.equals(department)) {
+                return depart;
+            }
+        }
+        throw new MemberException(DEPARTMENT_NOT_FOUND);
+    }
 }

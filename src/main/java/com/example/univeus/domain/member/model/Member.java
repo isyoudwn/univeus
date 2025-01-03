@@ -39,6 +39,7 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
+    @Column(length = 50)
     private String nickname;
 
     @Column(length = 30)
@@ -74,7 +75,6 @@ public class Member {
                 .email(email).build();
     }
 
-    // check
     public void checkProceed() {
         // TODO : 인증인가 에서도 사용해야함
         if (phoneNumber == null) {
@@ -83,5 +83,13 @@ public class Member {
         if (department == null || nickname == null || studentId == null || gender == null) {
             throw new MemberException(MEMBER_NOT_AUTHORIZED_PROFILE);
         }
+    }
+
+    public void updateProfile(Department department, Gender gender, String nickname, String studentId, String phoneNumber) {
+        this.department = department;
+        this.gender = gender;
+        this.nickname = nickname;
+        this.studentId = studentId;
+        this.phoneNumber = phoneNumber;
     }
 }
