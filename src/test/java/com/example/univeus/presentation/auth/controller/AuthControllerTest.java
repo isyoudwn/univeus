@@ -2,11 +2,9 @@ package com.example.univeus.presentation.auth.controller;
 
 import static com.example.univeus.common.response.ResponseMessage.CERTIFICATION_REQUEST_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.CERTIFICATION_VERIFY_SUCCESS;
-import static com.example.univeus.common.response.ResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.LOGIN_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PHONE;
 import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_AUTHORIZED_PROFILE;
-import static com.example.univeus.common.response.ResponseMessage.PROFILE_REGISTER_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.REFRESH_TOKEN_NOT_FOUND;
 import static com.example.univeus.common.response.ResponseMessage.REISSUE_TOKEN_SUCCESS;
 import static org.hamcrest.Matchers.*;
@@ -26,7 +24,6 @@ import com.example.univeus.presentation.BaseControllerTest;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.Certification;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.PhoneNumber;
-import com.example.univeus.presentation.auth.dto.request.AuthRequest.Profile;
 import com.example.univeus.presentation.auth.dto.response.AuthResponse.ResponseTokens;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
@@ -221,112 +218,6 @@ class AuthControllerTest extends BaseControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.code").value(MEMBER_NOT_AUTHORIZED_PROFILE.getCode()))
                     .andExpect(jsonPath("$.message").value(MEMBER_NOT_AUTHORIZED_PROFILE.getMessage()));
-        }
-    }
-
-    @Nested
-    @DisplayName("프로필 등록 테스트")
-    class TestRegisterProfile {
-
-        @Test
-        void 올바른_형식으로_요청을_보낼경우_예외가_발생하지_않는다() throws Exception {
-
-            AuthRequest.Profile profile = Profile.of(
-                    "nickname",
-                    "department",
-                    "gender",
-                    "studentId"
-            );
-
-            ResultActions resultActions =
-                    mockMvc.perform(post("/api/v1/auth/profile")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(profile)));
-
-            resultActions
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath(("$.code")).value(PROFILE_REGISTER_SUCCESS.getCode()))
-                    .andExpect(jsonPath(("$.message")).value(PROFILE_REGISTER_SUCCESS.getMessage()));
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideProfiles")
-        void 올바르지_않은_프로필_등록_요청을_보낼경우_예외가_발생한다(
-                String nickname, String department, String gender, String studentId
-        ) throws Exception {
-
-            AuthRequest.Profile profile = AuthRequest.Profile.of(
-                    nickname,
-                    department,
-                    gender,
-                    studentId
-            );
-
-            ResultActions resultActions =
-                    mockMvc.perform(post("/api/v1/auth/profile")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(profile)));
-
-            resultActions
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath(("$.code")).value("FORMAT-001"));
-        }
-
-        private static Stream<Arguments> provideProfiles() {
-            return Stream.of(
-                    Arguments.of("", "department", "gender", "studentId"),       // 닉네임이 공백
-                    Arguments.of("nickname", "", "gender", "studentId"),        // 학과가 공백
-                    Arguments.of("nickname", "department", "", "studentId"),    // 성별이 공백
-                    Arguments.of("nickname", "department", "gender", "")        // 학번이 공백
-            );
-        }
-
-        @Nested
-        @DisplayName("닉네임 중복 테스트")
-        class TestCheckNicknameDuplicated {
-
-            @Test
-            void 올바른_형식으로_요청을_보낼경우_예외가_발생하지_않는다() throws Exception {
-
-                // given
-                AuthRequest.Nickname nicknameRequest = AuthRequest.Nickname.of("testNickname");
-
-                // when
-                ResultActions resultActions =
-                        mockMvc
-                                .perform(post("/api/v1/auth/nickname/duplicated")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(objectMapper.writeValueAsString(nicknameRequest)));
-
-                // then
-                resultActions
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.code").value(CHECK_NICKNAME_DUPLICATED_SUCCESS.getCode()))
-                        .andExpect(jsonPath("$.message").value(CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage()));
-            }
-
-
-            @ParameterizedTest
-            @ValueSource(strings = {"", " ", "    "})
-            void 닉네임이_올바른_입력이_아닐경우_예외를_던진다(String nickname) throws Exception {
-
-                // given
-                AuthRequest.Nickname nicknameRequest = AuthRequest.Nickname.of(nickname);
-
-                // when
-                ResultActions resultActions =
-                        mockMvc
-                                .perform(post("/api/v1/auth/nickname/duplicated")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(objectMapper.writeValueAsString(nicknameRequest)));
-
-                // then
-                resultActions
-                        .andExpect(status().isBadRequest())
-                        .andExpect(jsonPath("$.status").value(false))
-                        .andExpect(jsonPath("$.code").value("FORMAT-001"))
-                        .andExpect(jsonPath("$.message").value("닉네임은 공백이 될 수 없습니다."));
-            }
         }
     }
 

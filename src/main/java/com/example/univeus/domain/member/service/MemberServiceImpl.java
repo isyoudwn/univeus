@@ -7,6 +7,8 @@ import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.repository.MemberRepository;
+import com.example.univeus.presentation.member.dto.request.MemberRequest.Nickname;
+import com.example.univeus.presentation.member.dto.request.MemberRequest.Profile;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,5 +71,22 @@ public class MemberServiceImpl implements MemberService {
                 member.getStudentId(),
                 phoneNumber
         );
+    }
+
+    @Override
+    public void registerProfile(Long memberId, Profile profileRequest) {
+        Department department = Department.of(profileRequest.department());
+        Gender gender = Gender.of(profileRequest.gender());
+
+        updateProfile(memberId, department, gender, profileRequest.nickname(),
+                profileRequest.studentId());
+    }
+
+    @Override
+    public void checkNicknameDuplicated(Nickname nicknameRequest) {
+        String nickname = nicknameRequest.nickname();
+        if (findByNickname(nickname).isPresent()) {
+            throw new MemberException(MEMBER_NICKNAME_DUPLICATED);
+        }
     }
 }
