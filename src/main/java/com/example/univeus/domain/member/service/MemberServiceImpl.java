@@ -50,11 +50,24 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void updateProfile(Long memberId, Department department, Gender gender, String nickName, String studentId) {
         Member member = findById(memberId);
-        member.updateProfile(department, gender, nickName, studentId);
+        member.updateProfile(department, gender, nickName, studentId, null);
     }
 
     @Override
     public Optional<Member> findByNickname(String nickname) {
         return memberRepository.findByNickname(nickname);
+    }
+
+    @Override
+    @Transactional
+    public void updatePhoneNumber(Long memberId, String phoneNumber) {
+        Member member = findById(memberId);
+        member.updateProfile(
+                member.getDepartment(),
+                member.getGender(),
+                member.getNickname(),
+                member.getStudentId(),
+                phoneNumber
+        );
     }
 }

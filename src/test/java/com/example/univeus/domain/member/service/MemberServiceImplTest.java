@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.model.Department;
 import com.example.univeus.domain.member.model.Gender;
@@ -193,4 +194,40 @@ class MemberServiceImplTest {
             assertFalse(present);
         }
     }
+
+    @Nested
+    @DisplayName("test updatePhoneNumber")
+    class TestUpdatePhoneNumber {
+
+        @Test
+        void 전화번호_업데이트를_성공한다() {
+            // given
+            Long memberId = 1L;
+            String newPhoneNumber = "01022222222";
+            when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(fixureMember));
+
+            // when, then
+            assertDoesNotThrow(() -> {
+                memberService.updatePhoneNumber(memberId, newPhoneNumber);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_사용자일_경우_전화번호_업데이트를_실패한다() {
+            // given
+            Long memberId = 1L;
+            String newPhoneNumber = "01022222222";
+            when(memberRepository.findById(any())).thenReturn(Optional.empty());
+
+            // when
+            MemberException memberException = assertThrows(MemberException.class, () ->
+                    memberService.updatePhoneNumber(memberId, newPhoneNumber)
+            );
+
+            // then
+            assertEquals(MEMBER_NOT_FOUND.getCode(), memberException.getCode());
+            assertEquals(MEMBER_NOT_FOUND.getMessage(), memberException.getMessage());
+        }
+    }
+
 }

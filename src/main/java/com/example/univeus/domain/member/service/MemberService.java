@@ -17,4 +17,6 @@ public interface MemberService {
     void updateProfile(Long memberId, Department department, Gender gender, String nickname, String studentId);
 
     Optional<Member> findByNickname(String nickname);
+
+    void updatePhoneNumber(Long memberId, String phoneNumber);
 }

@@ -85,10 +85,11 @@ public class Member {
         }
     }
 
-    public void updateProfile(Department department, Gender gender, String nickname, String studentId) {
-        this.gender = gender;
+    public void updateProfile(Department department, Gender gender, String nickname, String studentId, String phoneNumber) {
         this.department = department;
+        this.gender = gender;
         this.nickname = nickname;
         this.studentId = studentId;
+        this.phoneNumber = phoneNumber;
     }
 }

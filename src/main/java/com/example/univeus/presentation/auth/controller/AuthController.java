@@ -1,6 +1,7 @@
 package com.example.univeus.presentation.auth.controller;
 
 import static com.example.univeus.common.response.ResponseMessage.*;
+import static com.example.univeus.presentation.auth.dto.request.AuthRequest.*;
 
 import com.example.univeus.common.annotation.Auth;
 import com.example.univeus.common.annotation.MemberOnly;
@@ -8,7 +9,7 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.dto.AccessToken;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.auth.service.AuthService;
-import com.example.univeus.presentation.auth.dto.request.AuthRequest;
+import com.example.univeus.domain.auth.service.SmsCertificationService;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.Login;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.Nickname;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.Profile;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final SmsCertificationService smsCertificationService;
 
     @GetMapping("/reissue")
     public ResponseEntity<Response<AccessToken>> reissueTokens(
@@ -90,6 +92,38 @@ public class AuthController {
                 .body(Response.success(
                         CHECK_NICKNAME_DUPLICATED_SUCCESS.getCode(),
                         CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage()
+                ));
+    }
+
+    @PostMapping("number/request")
+    public ResponseEntity<Response<String>> getCertificationNumber(
+            @Valid @RequestBody PhoneNumber phoneNumberRequest
+    ) {
+        String phoneNumber = phoneNumberRequest.phoneNumber();
+        smsCertificationService.issueCertificationSms(phoneNumber);
+
+        return ResponseEntity
+                .ok()
+                .body(Response.success(
+                        CERTIFICATION_REQUEST_SUCCESS.getCode(),
+                        CERTIFICATION_REQUEST_SUCCESS.getMessage()
+                ));
+    }
+
+    @PostMapping("number/verify")
+    public ResponseEntity<Response<String>> verifyCertificationNumber(
+            @Valid @RequestBody Certification certificationRequest
+    ) {
+        String code = certificationRequest.code();
+        String phoneNumber = certificationRequest.phoneNumber();
+
+        smsCertificationService.verifyNumber(code, phoneNumber);
+
+        return ResponseEntity
+                .ok()
+                .body(Response.success(
+                        CERTIFICATION_VERIFY_SUCCESS.getCode(),
+                        CERTIFICATION_VERIFY_SUCCESS.getMessage()
                 ));
     }
 }

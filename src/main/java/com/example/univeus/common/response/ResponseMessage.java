@@ -18,6 +18,10 @@ public enum ResponseMessage {
     LOGIN_FAIL("AUTH-006", "로그인에 실패했습니다"),
     PROFILE_REGISTER_SUCCESS("AUTH-007", "프로필 등록을 성공했습니다."),
     CHECK_NICKNAME_DUPLICATED_SUCCESS("AUTH-008", "닉네임 중복 검사를 성공했습니다"),
+    INVALID_CERTIFICATION_NUMBER("AUTH-009", "인증번호가 올바르지 않습니다."),
+    CERTIFICATION_BAD_REQUEST("AUTH-010", "인증 번호 요청을 다시 수행하세요"),
+    CERTIFICATION_REQUEST_SUCCESS("AUTH-011", "인증번호 요청을 성공했습니다."),
+    CERTIFICATION_VERIFY_SUCCESS("AUTH-012", "인증번호 검증을 성공했습니다."),
 
     /**
      * member
@@ -29,7 +33,8 @@ public enum ResponseMessage {
     GENDER_NOT_FOUND("MEMBER-005", "존재하지 않는 성별입니다."),
     MEMBER_NICKNAME_DUPLICATED("MEMBER-006", "닉네임이 중복됩니다."),
     MEMBER_STUDENT_ID_FORMAT_EXCEPTION("MEMBER-007", "올바르지 않은 형식의 학번입니다."),
-    MEMBER_NICKNAME_FORMAT_EXCEPTION("MEMBER-008", "올바르지 않은 형식의 닉네임입니다.");
+    MEMBER_NICKNAME_FORMAT_EXCEPTION("MEMBER-008", "올바르지 않은 형식의 닉네임입니다."),
+    UPDATE_PHONE_NUMBER_SUCCESS("MEMBER-009", "휴대폰 번호 업데이트 성공했습니다.");
 
 
     private final String code;
