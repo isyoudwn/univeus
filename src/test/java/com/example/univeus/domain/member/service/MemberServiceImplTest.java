@@ -1,18 +1,23 @@
 package com.example.univeus.domain.member.service;
 
+import static com.example.univeus.common.response.ResponseMessage.DEPARTMENT_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.GENDER_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.MEMBER_NICKNAME_DUPLICATED;
 import static com.example.univeus.common.response.ResponseMessage.MEMBER_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.model.Department;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.model.Membership;
 import com.example.univeus.domain.member.repository.MemberRepository;
+import com.example.univeus.presentation.member.dto.request.MemberRequest.Nickname;
+import com.example.univeus.presentation.member.dto.request.MemberRequest.Profile;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -230,4 +235,113 @@ class MemberServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("프로필을 등록한다")
+    class TestRegisterProfile {
+
+        @Test
+        void 프로필_등록을_성공한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문대학",
+                    "WOMAN",
+                    "testStudentId"
+            );
+            when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(fixureMember));
+
+            // when
+            memberService.registerProfile(memberId, profile);
+
+            // then
+            assertDoesNotThrow(() ->
+                    memberService.registerProfile(memberId, profile));
+        }
+
+        @Test
+        void 성별이_올바르지_않게_입력될_경우_프로필_등록을_실패한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문대학",
+                    "WO",
+                    "testStudentId"
+            );
+
+            // when
+            MemberException memberException = assertThrows(
+                    MemberException.class, () ->
+                            memberService.registerProfile(memberId, profile));
+
+            // then
+            assertEquals(GENDER_NOT_FOUND, memberException.getResponseMessage());
+        }
+
+        @Test
+        void 학과가_올바르지_않게_입력될_경우_프로필_등록을_실패한다() {
+            // given
+            Long memberId = 1L;
+            Profile profile = Profile.of(
+                    "testNickname",
+                    "인문",
+                    "WOMAN",
+                    "testStudentId"
+            );
+
+            // when
+            MemberException memberException = assertThrows(
+                    MemberException.class, () ->
+                            memberService.registerProfile(memberId, profile));
+
+            // then
+            assertEquals(DEPARTMENT_NOT_FOUND, memberException.getResponseMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("닉네임 중복체크를 수행한다.")
+    class TestNicknameDuplicated {
+
+        Member member = new Member(
+                1L,
+                "testEmail",
+                "testNickName",
+                null,
+                "testPhoneNumber",
+                null,
+                null,
+                null
+        );
+
+        @Test
+        void 닉네임이_중복되지_않는다() {
+            // given
+            Nickname nicknameRequest = Nickname.of("newNickname");
+            when(memberService.findByNickname(any())).thenReturn(Optional.empty());
+
+
+
+            // when then
+            assertDoesNotThrow(() ->
+                    memberService.checkNicknameDuplicated(nicknameRequest)
+            );
+        }
+
+        @Test
+        void 닉네임이_중복된다면_예외를_던진다() {
+            // given
+            Nickname nicknameRequest = Nickname.of("testNickname");
+            when(memberService.findByNickname(any())).thenReturn(Optional.ofNullable(member));
+
+            // when
+            MemberException memberException = assertThrows(MemberException.class,
+                    () -> memberService.checkNicknameDuplicated(nicknameRequest)
+            );
+
+            // then
+            Assertions.assertEquals(MEMBER_NICKNAME_DUPLICATED, memberException.getResponseMessage());
+        }
+    }
 }

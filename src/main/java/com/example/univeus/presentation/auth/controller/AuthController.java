@@ -7,12 +7,9 @@ import com.example.univeus.common.annotation.Auth;
 import com.example.univeus.common.annotation.MemberOnly;
 import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.dto.AccessToken;
-import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.auth.service.AuthService;
 import com.example.univeus.domain.auth.service.SmsCertificationService;
 import com.example.univeus.presentation.auth.dto.request.AuthRequest.Login;
-import com.example.univeus.presentation.auth.dto.request.AuthRequest.Nickname;
-import com.example.univeus.presentation.auth.dto.request.AuthRequest.Profile;
 import com.example.univeus.presentation.auth.dto.response.AuthResponse.ResponseTokens;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,34 +61,6 @@ public class AuthController {
                         LOGIN_SUCCESS.getCode(),
                         LOGIN_SUCCESS.getMessage(),
                         loginResult.accessToken()
-                ));
-    }
-
-    @MemberOnly
-    @PostMapping("/profile")
-    public ResponseEntity<Response<String>> registerProfile(
-            @Auth Accessor accessor,
-            @Valid @RequestBody Profile profileRequest
-    ) {
-        authService.registerProfile(accessor.getMemberId(), profileRequest);
-        return ResponseEntity
-                .ok()
-                .body(Response.success(
-                        PROFILE_REGISTER_SUCCESS.getCode(),
-                        PROFILE_REGISTER_SUCCESS.getMessage()
-                ));
-    }
-
-    @PostMapping("/nickname/duplicated")
-    public ResponseEntity<Response<String>> checkNicknameDuplicated(
-            @Valid @RequestBody Nickname nicknameRequest
-    ) {
-        authService.checkNicknameDuplicated(nicknameRequest);
-        return ResponseEntity
-                .ok()
-                .body(Response.success(
-                        CHECK_NICKNAME_DUPLICATED_SUCCESS.getCode(),
-                        CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage()
                 ));
     }
 
