@@ -354,7 +354,7 @@ class AuthControllerTest extends BaseControllerTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"", " ", "12345678", "010123467889"})
-        void 올바른_형식의_번호로_요청을_할_경우_예외를_발생시킨다(String phoneNumber) throws Exception {
+        void 올바른_형식의_번호로_요청하지_않을경우_예외가_발생한다(String phoneNumber) throws Exception {
             // given
             AuthRequest.PhoneNumber phoneNumberRequest = PhoneNumber.of(phoneNumber);
 
@@ -371,7 +371,8 @@ class AuthControllerTest extends BaseControllerTest {
                     .andExpect(jsonPath("$.message",
                             anyOf(
                                     is("휴대폰 번호는 공백이 될 수 없습니다."),
-                                    is("휴대폰 번호의 길이가 올바르지 않습니다."))));
+                                    is("휴대폰 번호의 길이가 올바르지 않습니다."),
+                                    is("휴대폰 번호는 숫자만 포함해야 합니다."))));
         }
     }
 
