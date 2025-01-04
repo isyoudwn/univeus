@@ -1,6 +1,6 @@
 package com.example.univeus.domain.chat.model;
 
-import com.example.univeus.domain.meeting.model.Post;
+import com.example.univeus.domain.meeting.model.MeetingPost;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,5 +18,5 @@ public class ChatRoom {
     private Long id;
 
     @OneToOne
-    private Post post;
+    private MeetingPost meetingPost;
 }

@@ -2,10 +2,9 @@ package com.example.univeus.common.handler;
 
 
 import com.example.univeus.common.response.Response;
-import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.exception.AuthException;
+import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.exception.MemberException;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +22,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<Response<String>> handleMemberException(MemberException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(Response.failure(ex.getCode(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(MeetingException.class)
+    public ResponseEntity<Response<String>> handleMeetingPostException(MeetingException ex) {
         return ResponseEntity
                 .badRequest()
                 .body(Response.failure(ex.getCode(), ex.getMessage()));

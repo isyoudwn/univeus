@@ -1,12 +1,21 @@
 package com.example.univeus.domain.meeting.model;
 
-import com.example.univeus.domain.meeting.model.Coordinate;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Location {
     private String address;
+
     @Embedded
     private Coordinate coordinate;
+
+    public static Location of(String address, Coordinate coordinate) {
+        return new Location(address, coordinate);
+    }
 }

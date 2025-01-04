@@ -34,7 +34,17 @@ public enum ResponseMessage {
     MEMBER_NICKNAME_DUPLICATED("MEMBER-006", "닉네임이 중복됩니다."),
     MEMBER_STUDENT_ID_FORMAT_EXCEPTION("MEMBER-007", "올바르지 않은 형식의 학번입니다."),
     MEMBER_NICKNAME_FORMAT_EXCEPTION("MEMBER-008", "올바르지 않은 형식의 닉네임입니다."),
-    UPDATE_PHONE_NUMBER_SUCCESS("MEMBER-009", "휴대폰 번호 업데이트 성공했습니다.");
+    UPDATE_PHONE_NUMBER_SUCCESS("MEMBER-009", "휴대폰 번호 업데이트 성공했습니다."),
+
+    /**
+     * meeting
+     */
+    POST_DEADLINE_IS_PAST("MEETING-000", "게시글 마감일을 과거로 정할 수 없습니다."),
+    INVALID_MEETING_CATEGORY("MEETING-001", "존재하지 않는 카테고리입니다."),
+    MEETING_SCHEDULE_IS_PAST("MEETING-002", "모임 날짜를 과거로 정할 수 없습니다"),
+    MEETING_SCHEDULE_IS_AFTER_THAN_POST_DEADLINE("MEETING-003", "모임 날짜가 게시글 마감일 이전입니다."),
+    MEETING_UPLOAD_SUCCESS("MEETING-004", "모임 생성을 성공했습니다."),
+    JOIN_LIMIT_INVALID("MEETING-005", "참여 인원수는 0이상 20이하입니다.");
 
 
     private final String code;
