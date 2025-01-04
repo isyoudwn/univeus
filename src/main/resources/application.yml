@@ -27,6 +27,8 @@ spring:
       - jwt
       - coolSMS
       - redis
+      - aws
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
