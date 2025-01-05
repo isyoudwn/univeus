@@ -44,7 +44,10 @@ public enum ResponseMessage {
     MEETING_SCHEDULE_IS_PAST("MEETING-002", "모임 날짜를 과거로 정할 수 없습니다"),
     MEETING_SCHEDULE_IS_AFTER_THAN_POST_DEADLINE("MEETING-003", "모임 날짜가 게시글 마감일 이전입니다."),
     MEETING_UPLOAD_SUCCESS("MEETING-004", "모임 생성을 성공했습니다."),
-    JOIN_LIMIT_INVALID("MEETING-005", "참여 인원수는 0이상 20이하입니다.");
+    JOIN_LIMIT_INVALID("MEETING-005", "참여 인원수는 0이상 20이하입니다."),
+    MEETING_POST_NOT_FOUND("MEETING-006", "모임 글을 찾을 수 없습니다."),
+    MEETING_BAD_REQUEST("MEETING-007", "권한이 없습니다."),
+    DELETE_MEETING_SUCCESS("MEETING-008", "모임 글 삭제를 성공했습니다.");
 
 
     private final String code;

@@ -1,6 +1,8 @@
 package com.example.univeus.domain.meeting.service;
 
+import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.common.util.TimeUtil;
+import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.meeting.model.Coordinate;
 import com.example.univeus.domain.meeting.model.Location;
 import com.example.univeus.domain.meeting.model.MeetingCategory;
@@ -15,6 +17,7 @@ import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +56,23 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         );
 
         meetingPostRepository.save(meetingPost);
+    }
+
+    @Override
+    @Transactional
+    public void deletePost(Long memberId, Long postId) {
+        Member writer = memberService.findById(memberId);
+        MeetingPost meetingPost = findById(postId);
+
+        if (!Objects.equals(meetingPost.getWriter().getId(), writer.getId())) {
+            throw new MeetingException(ResponseMessage.MEETING_BAD_REQUEST);
+        }
+        meetingPostRepository.delete(meetingPost);
+    }
+
+    @Override
+    public MeetingPost findById(Long postId) {
+        return meetingPostRepository.findById(postId)
+                .orElseThrow(() -> new MeetingException(ResponseMessage.MEETING_POST_NOT_FOUND));
     }
 }
