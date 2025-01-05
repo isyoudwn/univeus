@@ -1,20 +1,14 @@
 package com.example.univeus.domain.meeting.service;
 
 import com.example.univeus.common.response.ResponseMessage;
-import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
-import com.example.univeus.domain.meeting.model.Coordinate;
-import com.example.univeus.domain.meeting.model.Location;
-import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
-import com.example.univeus.domain.meeting.model.MeetingSchedule;
-import com.example.univeus.domain.meeting.model.PostDeadline;
-import com.example.univeus.domain.meeting.repository.MeetingPostImageRepository;
 import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
-import com.example.univeus.domain.member.model.Gender;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailDTO;
+import com.example.univeus.domain.meeting.service.dto.mapper.MeetingPostMapper;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
-import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
+import com.example.univeus.presentation.meeting.dto.request.MeetingRequest.MeetingPostWriteAndUpdate;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -28,32 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeetingPostServiceImpl implements MeetingPostService {
 
     private final MeetingPostRepository meetingPostRepository;
-    private final MeetingPostImageRepository meetingPostImageRepository;
     private final MemberService memberService;
     private final Clock clock;
 
+    @Override
     @Transactional
-    public void writePost(Long writerId, MeetingRequest.WriteMeetingPost writeMeetingPost) {
+    public void writePost(Long writerId, MeetingPostWriteAndUpdate writeMeetingPost) {
         LocalDateTime now = LocalDateTime.now(clock);
-
         Member writer = memberService.findById(writerId);
-        Coordinate coordinate = Coordinate.of(writeMeetingPost.latitude(), writeMeetingPost.longitude());
-        Gender gender = Gender.of(writeMeetingPost.genderLimit());
-        Location location = Location.of(writeMeetingPost.address(), coordinate);
-        MeetingCategory meetingCategory = MeetingCategory.of(writeMeetingPost.meetingCategory());
-
-        PostDeadline postDeadline = PostDeadline.of(
-                TimeUtil.parseToLocalDateTime(writeMeetingPost.postDeadline()), now);
-        MeetingSchedule meetingSchedule = MeetingSchedule.of(
-                TimeUtil.parseToLocalDateTime(writeMeetingPost.meetingSchedule()), now, postDeadline);
-
-        MeetingPost meetingPost = MeetingPost.create(
-                writer,
-                writeMeetingPost.title(),
-                writeMeetingPost.body(),
-                Integer.parseInt(writeMeetingPost.joinLimit()), gender
-                , location, postDeadline, meetingSchedule, meetingCategory
-        );
+        MeetingPost meetingPost = MeetingPostMapper.toMeetingPost(writer, writeMeetingPost, now);
 
         meetingPostRepository.save(meetingPost);
     }
@@ -74,5 +51,29 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     public MeetingPost findById(Long postId) {
         return meetingPostRepository.findById(postId)
                 .orElseThrow(() -> new MeetingException(ResponseMessage.MEETING_POST_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public void updatePost(Long memberId, Long postId, MeetingPostWriteAndUpdate updateMeetingPost) {
+        Member writer = memberService.findById(memberId);
+        MeetingPost meetingPost = findById(postId);
+
+        if (!Objects.equals(meetingPost.getWriter().getId(), writer.getId())) {
+            throw new MeetingException(ResponseMessage.MEETING_BAD_REQUEST);
+        }
+        LocalDateTime now = LocalDateTime.now(clock);
+        MeetingPostDetailDTO meetingPostDetail = MeetingPostMapper.toMeetingPostDetail(updateMeetingPost, now);
+
+        meetingPost.update(
+                meetingPostDetail.title(),
+                meetingPostDetail.body(),
+                meetingPostDetail.joinLimit(),
+                meetingPostDetail.genderLimit(),
+                meetingPostDetail.location(),
+                meetingPostDetail.postDeadline(),
+                meetingPostDetail.meetingSchedule(),
+                meetingPostDetail.meetingCategory()
+        );
     }
 }

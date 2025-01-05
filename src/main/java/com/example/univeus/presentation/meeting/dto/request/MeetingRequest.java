@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public class MeetingRequest {
 
-        public record WriteMeetingPost(
+        public record MeetingPostWriteAndUpdate(
                 @NotBlank(message = "제목은 공백이 될 수 없습니다.")
                 @Size(min = 5, max = 50, message = "제목의 길이는 1이상 50이하이어야 합니다.")
                 String title,

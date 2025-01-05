@@ -85,4 +85,18 @@ public class MeetingPost {
                 .meetingCategory(meetingCategory)
                 .build();
     }
+
+    public void update(String title, String body,
+                       Integer joinLimit, Gender genderLimit,
+                       Location location, PostDeadline postDeadLine,
+                       MeetingSchedule meetingSchedule, MeetingCategory meetingCategory) {
+        this.title = title;
+        this.body = body;
+        this.joinLimit = joinLimit;
+        this.genderLimit = genderLimit;
+        this.location = location;
+        this.postDeadLine = postDeadLine;
+        this.meetingSchedule = meetingSchedule;
+        this.meetingCategory = meetingCategory;
+    }
 }
