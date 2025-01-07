@@ -5,7 +5,6 @@ import static com.example.univeus.common.response.ResponseMessage.IMAGE_UPLOAD_F
 import com.example.univeus.common.config.S3Config;
 import com.example.univeus.common.util.S3FileManager;
 import com.example.univeus.domain.image.exception.ImageException;
-import com.example.univeus.domain.image.service.ImageService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
 @RequiredArgsConstructor
-public class S3UploadService implements ImageService {
+public class S3UploadService implements UploadService {
 
     private final S3Client s3Client;
     private final S3Config s3Config;

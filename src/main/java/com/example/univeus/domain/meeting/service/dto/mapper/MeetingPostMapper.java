@@ -10,7 +10,7 @@ import com.example.univeus.domain.meeting.model.PostDeadline;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailDTO;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
-import com.example.univeus.presentation.meeting.dto.request.MeetingRequest.MeetingPostWriteAndUpdate;
+import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
 import java.time.LocalDateTime;
 
 public class MeetingPostMapper {
@@ -40,19 +40,19 @@ public class MeetingPostMapper {
         return MeetingSchedule.of(TimeUtil.parseToLocalDateTime(meetingSchedule), now, postDeadline);
     }
 
-    public static MeetingPost toMeetingPost(Member member, MeetingPostWriteAndUpdate meetingPostDto, LocalDateTime now) {
-        Coordinate coordinate = toCoordinate(meetingPostDto.latitude(), meetingPostDto.longitude());
-        Gender gender = toGender(meetingPostDto.genderLimit());
-        Location location = toLocation(meetingPostDto.address(), coordinate);
-        MeetingCategory meetingCategory = toMeetingCategory(meetingPostDto.meetingCategory());
-        PostDeadline postDeadline = toPostDeadline(meetingPostDto.postDeadline(), now);
-        MeetingSchedule meetingSchedule = toMeetingSchedule(meetingPostDto.meetingSchedule(), postDeadline, now);
+    public static MeetingPost toMeetingPost(Member member, MeetingPostContent meetingPostContent, LocalDateTime now) {
+        Coordinate coordinate = toCoordinate(meetingPostContent.latitude(), meetingPostContent.longitude());
+        Gender gender = toGender(meetingPostContent.genderLimit());
+        Location location = toLocation(meetingPostContent.address(), coordinate);
+        MeetingCategory meetingCategory = toMeetingCategory(meetingPostContent.meetingCategory());
+        PostDeadline postDeadline = toPostDeadline(meetingPostContent.postDeadline(), now);
+        MeetingSchedule meetingSchedule = toMeetingSchedule(meetingPostContent.meetingSchedule(), postDeadline, now);
 
         return MeetingPost.create(
                 member,
-                meetingPostDto.title(),
-                meetingPostDto.body(),
-                Integer.parseInt(meetingPostDto.joinLimit()),
+                meetingPostContent.title(),
+                meetingPostContent.body(),
+                Integer.parseInt(meetingPostContent.joinLimit()),
                 gender,
                 location,
                 postDeadline,
@@ -60,20 +60,20 @@ public class MeetingPostMapper {
                 meetingCategory);
     }
 
-    public static MeetingPostDetailDTO toMeetingPostDetail(MeetingPostWriteAndUpdate meetingPostDto,
-                                                           LocalDateTime now) {
-        Coordinate coordinate = toCoordinate(meetingPostDto.latitude(), meetingPostDto.longitude());
-        Gender gender = toGender(meetingPostDto.genderLimit());
-        Location location = toLocation(meetingPostDto.address(), coordinate);
-        MeetingCategory meetingCategory = toMeetingCategory(meetingPostDto.meetingCategory());
-        PostDeadline postDeadline = toPostDeadline(meetingPostDto.postDeadline(), now);
-        MeetingSchedule meetingSchedule = toMeetingSchedule(meetingPostDto.meetingSchedule(), postDeadline, now);
+    public static MeetingPostDetailDTO toMeetingPostDetail(MeetingPostContent meetingPostContent, LocalDateTime now) {
+
+        Coordinate coordinate = toCoordinate(meetingPostContent.latitude(), meetingPostContent.longitude());
+        Gender gender = toGender(meetingPostContent.genderLimit());
+        Location location = toLocation(meetingPostContent.address(), coordinate);
+        MeetingCategory meetingCategory = toMeetingCategory(meetingPostContent.meetingCategory());
+        PostDeadline postDeadline = toPostDeadline(meetingPostContent.postDeadline(), now);
+        MeetingSchedule meetingSchedule = toMeetingSchedule(meetingPostContent.meetingSchedule(), postDeadline, now);
 
         return new MeetingPostDetailDTO(
-                meetingPostDto.title(),
-                meetingPostDto.body(),
+                meetingPostContent.title(),
+                meetingPostContent.body(),
                 gender,
-                Integer.parseInt(meetingPostDto.joinLimit()),
+                Integer.parseInt(meetingPostContent.joinLimit()),
                 meetingCategory,
                 postDeadline,
                 meetingSchedule,

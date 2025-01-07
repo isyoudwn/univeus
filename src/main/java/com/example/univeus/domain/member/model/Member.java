@@ -2,7 +2,6 @@ package com.example.univeus.domain.member.model;
 
 import static com.example.univeus.common.response.ResponseMessage.*;
 
-import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.member.exception.MemberException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -91,5 +91,11 @@ public class Member {
         this.nickname = nickname;
         this.studentId = studentId;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void isMine(Member writer) {
+        if (!Objects.equals(this.getId(), writer.getId())) {
+            throw new MemberException(MEMBER_BAD_REQUEST);
+        }
     }
 }

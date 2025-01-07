@@ -35,6 +35,8 @@ public enum ResponseMessage {
     MEMBER_STUDENT_ID_FORMAT_EXCEPTION("MEMBER-007", "올바르지 않은 형식의 학번입니다."),
     MEMBER_NICKNAME_FORMAT_EXCEPTION("MEMBER-008", "올바르지 않은 형식의 닉네임입니다."),
     UPDATE_PHONE_NUMBER_SUCCESS("MEMBER-009", "휴대폰 번호 업데이트 성공했습니다."),
+    MEMBER_BAD_REQUEST("MEMBER-010", "권한이 없습니다."),
+
 
     /**
      * meeting

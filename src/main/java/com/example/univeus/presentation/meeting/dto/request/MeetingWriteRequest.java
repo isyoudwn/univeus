@@ -3,11 +3,15 @@ package com.example.univeus.presentation.meeting.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 
 
-public class MeetingRequest {
+public class MeetingWriteRequest {
 
-        public record MeetingPostWriteAndUpdate(
+        public record MeetingPostWrite(MeetingPostContent meetingPostContent, MeetingPostUris meetingPostUris) {
+        }
+
+        public record MeetingPostContent(
                 @NotBlank(message = "제목은 공백이 될 수 없습니다.")
                 @Size(min = 5, max = 50, message = "제목의 길이는 1이상 50이하이어야 합니다.")
                 String title,
@@ -42,6 +46,11 @@ public class MeetingRequest {
 
                 @NotBlank(message = "위치는 공백이 될 수 없습니다.")
                 String longitude
+        ) {
+        }
+
+        public record MeetingPostUris(
+                List<String> uris
         ) {
         }
 }
