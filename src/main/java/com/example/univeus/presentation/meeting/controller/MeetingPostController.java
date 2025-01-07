@@ -6,7 +6,8 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
-import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
+import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest;
+import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,11 @@ public class MeetingPostController {
     @PostMapping("/post")
     public ResponseEntity<Response<String>> writeMeetingPost(
             @Auth Accessor accessor,
-            @Valid @RequestBody MeetingRequest.MeetingPostWriteAndUpdate writeMeetingPost
+            @Valid @RequestBody MeetingWriteRequest.MeetingPostWrite meetingPostWrite
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.writePost(memberId, writeMeetingPost);
+        meetingPostService.writePost(memberId, meetingPostWrite.meetingPostContent(),
+                meetingPostWrite.meetingPostUris());
         return ResponseEntity
                 .ok()
                 .body(Response.success(
@@ -63,10 +65,10 @@ public class MeetingPostController {
     public ResponseEntity<Response<String>> updateMeetingPost(
             @Auth Accessor accessor,
             @PathVariable String postId,
-            @Valid @RequestBody MeetingRequest.MeetingPostWriteAndUpdate updateMeetingPost
+            @Valid @RequestBody MeetingUpdateRequest.MeetingPostUpdate meetingPostUpdate
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.updatePost(memberId, Long.valueOf(postId), updateMeetingPost);
+        meetingPostService.updatePost(memberId, Long.valueOf(postId), meetingPostUpdate);
 
         return ResponseEntity
                 .ok()

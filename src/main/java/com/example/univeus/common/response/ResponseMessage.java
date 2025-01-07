@@ -35,6 +35,8 @@ public enum ResponseMessage {
     MEMBER_STUDENT_ID_FORMAT_EXCEPTION("MEMBER-007", "올바르지 않은 형식의 학번입니다."),
     MEMBER_NICKNAME_FORMAT_EXCEPTION("MEMBER-008", "올바르지 않은 형식의 닉네임입니다."),
     UPDATE_PHONE_NUMBER_SUCCESS("MEMBER-009", "휴대폰 번호 업데이트 성공했습니다."),
+    MEMBER_BAD_REQUEST("MEMBER-010", "권한이 없습니다."),
+
 
     /**
      * meeting
@@ -48,7 +50,14 @@ public enum ResponseMessage {
     MEETING_POST_NOT_FOUND("MEETING-006", "모임 글을 찾을 수 없습니다."),
     MEETING_BAD_REQUEST("MEETING-007", "권한이 없습니다."),
     DELETE_MEETING_SUCCESS("MEETING-008", "모임 글 삭제를 성공했습니다."),
-    UPDATE_MEETING_SUCCESS("MEETING-009", "모임 글 수정을 성공했습니다.");
+    UPDATE_MEETING_SUCCESS("MEETING-009", "모임 글 수정을 성공했습니다."),
+
+    /* *
+     * image
+     * */
+    IMAGE_UPLOAD_SUCCESS("IMAGE-000", "이미지 업로드를 성공했습니다."),
+    IMAGE_UPLOAD_FAIL("IMAGE-001", "이미지 업로드를 실패했습니다.");
+    ;
 
 
     private final String code;
