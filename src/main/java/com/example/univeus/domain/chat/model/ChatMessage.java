@@ -1,25 +1,27 @@
 package com.example.univeus.domain.chat.model;
 
-import com.example.univeus.domain.member.model.Member;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Document(collection = "ChatMessages")
+@AllArgsConstructor
+@Builder
 public class ChatMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private ObjectId id;
+    private Long chatRoomId;
+    private String content;
+    private Long senderId;
 
-    @ManyToOne
-    private ChatRoom chatRoom;
-
-    @ManyToOne
-    private Member sender;
+    public static ChatMessage create(Long chatRoomId, String content, Long senderId) {
+        return ChatMessage.builder()
+                .chatRoomId(chatRoomId)
+                .content(content)
+                .senderId(senderId)
+                .build();
+    }
 }
