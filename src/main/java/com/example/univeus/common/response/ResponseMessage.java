@@ -61,7 +61,7 @@ public enum ResponseMessage {
     /* *
      * chatting
      * */
-    SESSION_TIME_OUT("CHAT-000", "세션이 만료되었습니다.");
+    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다.")
     ;
 
 

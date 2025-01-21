@@ -5,6 +5,10 @@ import com.example.univeus.domain.chat.repository.ChatMessageRepository;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.presentation.chat.dto.ChatMessageRequest;
+import com.example.univeus.presentation.chat.dto.ChatMessageResponse;
+import java.awt.print.Pageable;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
@@ -25,7 +29,9 @@ public class ChatServiceImpl implements ChatService {
                 ChatMessage.create(
                         Long.valueOf(roomId),
                         chatMessageRequest.content(),
-                        Long.valueOf(memberDetail.userId())
+                        Long.valueOf(memberDetail.userId()),
+                        memberDetail.nickName(),
+                        memberDetail.studentId()
                 );
         chatMessageRepository.save(chatMessage);
     }
@@ -42,5 +48,15 @@ public class ChatServiceImpl implements ChatService {
     public ChattingMemberDetailDTO getMemberDetailById(Long userId) {
         Member member = memberService.findById(userId);
         return ChattingMemberDetailDTO.of(userId.toString(), member.getNickname(), member.getStudentId());
+    }
+
+    @Override
+    public List<ChatMessageResponse> getMessages(Long chatRoomId) {
+        List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId);
+
+        return chatMessages.stream()
+                .map(chatMessage -> new ChatMessageResponse(chatMessage.getStudentId(), chatMessage.getNickname(),
+                        chatMessage.getContent(), "10:11"))
+                .collect(Collectors.toList());
     }
 }
