@@ -1,6 +1,8 @@
 package com.example.univeus.domain.participant.service;
 
 import static com.example.univeus.common.response.ResponseMessage.ALREADY_PARTICIPANT;
+import static com.example.univeus.common.response.ResponseMessage.NOT_PARTICIPATE_THIS_MEETING;
+import static com.example.univeus.common.response.ResponseMessage.OWNER_CANT_LEAVE_THE_MEETING;
 import static com.example.univeus.common.response.ResponseMessage.PARTICIPANT_EXCEEDED;
 import static com.example.univeus.common.response.ResponseMessage.PARTICIPANT_GENDER_LIMIT;
 
@@ -50,10 +52,25 @@ public class ParticipantServiceImpl implements ParticipantService {
         participantRepository.save(participant);
     }
 
+    @Override
+    @Transactional
+    public void removeParticipant(Long postId, Long memberId) {
+        MeetingPost meetingPost = meetingPostService.findById(postId);
+        Member member = memberService.findById(memberId);
+
+        Participant participant = participantRepository.findByMeetingPostAndMember(meetingPost, member)
+                .orElseThrow(() -> new ParticipantException(NOT_PARTICIPATE_THIS_MEETING));
+
+        if (participant.getParticipantRole() == ParticipantRole.OWNER) {
+            throw new ParticipantException(OWNER_CANT_LEAVE_THE_MEETING);
+        }
+
+        participantRepository.delete(participant);
+    }
+
     @Transactional
     public Boolean isAlreadyParticipate(List<Participant> participants, Member member) {
         return participants.stream()
-                .map(participant -> participant.getMember().equals(member))
-                .findFirst().isPresent();
+                .anyMatch(participant -> participant.getMember().equals(member));
     }
 }
