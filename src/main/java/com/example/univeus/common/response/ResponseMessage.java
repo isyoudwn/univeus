@@ -61,7 +61,15 @@ public enum ResponseMessage {
     /* *
      * chatting
      * */
-    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다.")
+    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다."),
+
+    /* *
+     * participant
+     * */
+    PARTICIPANT_EXCEEDED("PARTICIPANT-000", "참여인원을 초과했습니다."),
+    PARTICIPANT_GENDER_LIMIT("PARTICIPANT-001", "허용하지 않는 성별입니다."),
+    PARTICIPANT_SUCCESS("PARTICIPANT-002", "참여를 성공했습니다."),
+    ALREADY_PARTICIPANT("PARTICIPANT-003", "이미 참여를 한 모임입니다")
     ;
 
 

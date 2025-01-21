@@ -13,7 +13,6 @@ import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostImageDTO;
 import com.example.univeus.domain.participant.Participant;
 import com.example.univeus.domain.participant.ParticipantRole;
-import com.example.univeus.domain.participant.service.ParticipantService;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.DeletedPostImages;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
@@ -30,7 +29,6 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     private final MeetingPostRepository meetingPostRepository;
     private final MemberService memberService;
-    private final ParticipantService participantService;
     private final Clock clock;
 
     @Override
@@ -50,10 +48,12 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         LocalDateTime now = LocalDateTime.now(clock);
         Member currentMember = memberService.findById(writerId);
         MeetingPost meetingPost = MeetingPostMapper.toMeetingPost(currentMember, meetingPostContent, now);
+        Participant participant  = Participant.create(currentMember, meetingPost, ParticipantRole.OWNER);
+
         addImages(meetingPost, meetingPostUris);
+        meetingPost.addParticipant(participant);
 
         meetingPostRepository.save(meetingPost);
-        participantService.participate(meetingPost, currentMember, ParticipantRole.OWNER);
     }
 
     @Override

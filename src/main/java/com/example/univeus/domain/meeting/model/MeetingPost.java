@@ -118,6 +118,7 @@ public class MeetingPost {
 
     public void addParticipant(Participant participant) {
         this.participants.add(participant);
+        participant.addMeetingPost(this);
     }
 
     public void deleteImages(Long imageId) {
