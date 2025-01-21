@@ -2,6 +2,7 @@ package com.example.univeus.domain.meeting.service;
 
 import static com.example.univeus.common.response.ResponseMessage.MEETING_POST_NOT_FOUND;
 
+import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingPostImage;
@@ -13,6 +14,7 @@ import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostImageDTO;
 import com.example.univeus.domain.participant.Participant;
 import com.example.univeus.domain.participant.ParticipantRole;
+import com.example.univeus.domain.scheduler.service.QuartzService;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.DeletedPostImages;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
@@ -29,6 +31,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     private final MeetingPostRepository meetingPostRepository;
     private final MemberService memberService;
+    private final QuartzService quartzService;
     private final Clock clock;
 
     @Override
@@ -53,7 +56,9 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         addImages(meetingPost, meetingPostUris);
         meetingPost.addParticipant(participant);
 
-        meetingPostRepository.save(meetingPost);
+        MeetingPost saved = meetingPostRepository.save(meetingPost);
+
+        quartzService.scheduleDeadlineEvent(saved.getId().toString(), TimeUtil.localDateTimeToDate(saved.getPostDeadLine().getPostDeadline(), clock));
     }
 
     @Override
@@ -87,7 +92,8 @@ public class MeetingPostServiceImpl implements MeetingPostService {
                 meetingPostDetail.postDeadline(),
                 meetingPostDetail.meetingSchedule(),
                 meetingPostDetail.meetingCategory(),
-                meetingPost.getImages()
+                meetingPost.getImages(),
+                meetingPost.getMeetingPostStatus()
         );
     }
 
