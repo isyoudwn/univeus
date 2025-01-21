@@ -72,7 +72,8 @@ public enum ResponseMessage {
     ALREADY_PARTICIPANT("PARTICIPANT-003", "이미 참여를 한 모임입니다"),
     NOT_PARTICIPATE_THIS_MEETING("PARTICIPANT-004", "참가하지 않은 모임입니다."),
     OWNER_CANT_LEAVE_THE_MEETING("PARTICIPANT-005", "방장은 모임에서 탈퇴할 수 없습니다."),
-    REMOVE_PARTICIPANT_SUCCESS("PARTICIPANT-006", "모임을 성공적으로 떠났습니다.");
+    REMOVE_PARTICIPANT_SUCCESS("PARTICIPANT-006", "모임을 성공적으로 떠났습니다."),
+    CANT_PARTICIPATE_AFTER_THE_DEADLINE("PARTICIPANT-007", "마감일 이후에 참여할 수 없습니다.");
 
 
     private final String code;

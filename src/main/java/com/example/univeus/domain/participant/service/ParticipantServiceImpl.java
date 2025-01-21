@@ -1,6 +1,7 @@
 package com.example.univeus.domain.participant.service;
 
 import static com.example.univeus.common.response.ResponseMessage.ALREADY_PARTICIPANT;
+import static com.example.univeus.common.response.ResponseMessage.CANT_PARTICIPATE_AFTER_THE_DEADLINE;
 import static com.example.univeus.common.response.ResponseMessage.NOT_PARTICIPATE_THIS_MEETING;
 import static com.example.univeus.common.response.ResponseMessage.OWNER_CANT_LEAVE_THE_MEETING;
 import static com.example.univeus.common.response.ResponseMessage.PARTICIPANT_EXCEEDED;
@@ -15,6 +16,8 @@ import com.example.univeus.domain.participant.Participant;
 import com.example.univeus.domain.participant.ParticipantRole;
 import com.example.univeus.domain.participant.exception.ParticipantException;
 import com.example.univeus.domain.participant.repository.ParticipantRepository;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final ParticipantRepository participantRepository;
     private final MeetingPostService meetingPostService;
     private final MemberService memberService;
+    private final Clock clock;
 
     @Override
     @Transactional
@@ -36,6 +40,10 @@ public class ParticipantServiceImpl implements ParticipantService {
 
         if (meetingPost.getJoinLimit() < participants.size() + 1) {
             throw new ParticipantException(PARTICIPANT_EXCEEDED);
+        }
+
+        if (meetingPost.getPostDeadLine().getPostDeadline().isAfter(LocalDateTime.now(clock))) {
+            throw new ParticipantException(CANT_PARTICIPATE_AFTER_THE_DEADLINE);
         }
 
         Member member = memberService.findById(memberId);
