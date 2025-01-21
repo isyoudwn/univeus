@@ -4,6 +4,7 @@ import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
+import com.example.univeus.domain.participant.Participant;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -67,6 +68,11 @@ public class MeetingPost {
     @Builder.Default
     private List<MeetingPostImage> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "meetingPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Participant> participants = new ArrayList<>();
+
+
     public static MeetingPost create(Member writer, String title, String body,
                                      Integer joinLimit, Gender genderLimit,
                                      Location location, PostDeadline postDeadLine,
@@ -108,6 +114,10 @@ public class MeetingPost {
     public void addImage(MeetingPostImage meetingPostImage) {
         this.images.add(meetingPostImage);
         meetingPostImage.addMeetingPost(this);
+    }
+
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
     }
 
     public void deleteImages(Long imageId) {

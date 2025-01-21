@@ -3,9 +3,9 @@ package com.example.univeus.domain.participant;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum ParticipantStatus {
-    PENDING("pending"),
-    JOINING("joining");
+public enum ParticipantRole {
+    OWNER("owner"),
+    PARTICIPANT("participant");
 
     private final String status;
 }

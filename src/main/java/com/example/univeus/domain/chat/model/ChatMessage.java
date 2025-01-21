@@ -15,15 +15,15 @@ public class ChatMessage {
 
     @Id
     private ObjectId id;
-    private Long chatRoomId;
+    private Long postId;
     private String content;
     private String nickname;
     private String studentId;
     private Long senderId;
 
-    public static ChatMessage create(Long chatRoomId, String content, Long senderId, String nickname, String studentId) {
+    public static ChatMessage create(Long postId, String content, Long senderId, String nickname, String studentId) {
         return ChatMessage.builder()
-                .chatRoomId(chatRoomId)
+                .postId(postId)
                 .content(content)
                 .studentId(studentId)
                 .nickname(nickname)

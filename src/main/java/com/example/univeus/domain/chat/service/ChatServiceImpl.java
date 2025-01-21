@@ -6,7 +6,6 @@ import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.presentation.chat.dto.ChatMessageRequest;
 import com.example.univeus.presentation.chat.dto.ChatMessageResponse;
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +50,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatMessageResponse> getMessages(Long chatRoomId) {
-        List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId);
+    public List<ChatMessageResponse> getMessages(Long postId) {
+        List<ChatMessage> chatMessages = chatMessageRepository.findAllByPostId(postId);
 
         return chatMessages.stream()
                 .map(chatMessage -> new ChatMessageResponse(chatMessage.getStudentId(), chatMessage.getNickname(),
