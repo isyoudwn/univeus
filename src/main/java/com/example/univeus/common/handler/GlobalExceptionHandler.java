@@ -5,6 +5,7 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.exception.AuthException;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.exception.MemberException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

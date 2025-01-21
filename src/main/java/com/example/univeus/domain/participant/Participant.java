@@ -10,10 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Participant {
 
     @Id
@@ -27,5 +31,18 @@ public class Participant {
     private MeetingPost meetingPost;
 
     @Enumerated(EnumType.STRING)
-    private ParticipantStatus participantStatus;
+    private ParticipantRole participantRole;
+
+    public static Participant create(Member member, MeetingPost meetingPost, ParticipantRole participantRole) {
+        return builder()
+                .participantRole(participantRole)
+                .member(member)
+                .meetingPost(meetingPost)
+                .build();
+    }
+
+    public void addMeetingPost(MeetingPost meetingPost) {
+        this.meetingPost = meetingPost;
+        meetingPost.addParticipant(this);
+    }
 }

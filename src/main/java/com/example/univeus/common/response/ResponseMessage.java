@@ -56,7 +56,12 @@ public enum ResponseMessage {
      * image
      * */
     IMAGE_UPLOAD_SUCCESS("IMAGE-000", "이미지 업로드를 성공했습니다."),
-    IMAGE_UPLOAD_FAIL("IMAGE-001", "이미지 업로드를 실패했습니다.");
+    IMAGE_UPLOAD_FAIL("IMAGE-001", "이미지 업로드를 실패했습니다."),
+
+    /* *
+     * chatting
+     * */
+    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다.")
     ;
 
 

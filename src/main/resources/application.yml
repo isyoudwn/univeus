@@ -4,6 +4,9 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
   main:
     allow-bean-definition-overriding: true
   application:
