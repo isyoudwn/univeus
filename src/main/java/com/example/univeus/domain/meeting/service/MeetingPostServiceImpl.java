@@ -43,6 +43,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         currentMember.isMine(meetingPost.getWriter());
 
         meetingPostRepository.delete(meetingPost);
+        quartzService.deleteJob(postId.toString());
     }
 
     @Override
@@ -95,6 +96,8 @@ public class MeetingPostServiceImpl implements MeetingPostService {
                 meetingPost.getImages(),
                 meetingPost.getMeetingPostStatus()
         );
+
+        quartzService.updateSchedule(postId.toString(), TimeUtil.localDateTimeToDate(meetingPostDetail.postDeadline().getPostDeadline(), clock));
     }
 
     private void deleteImages(MeetingPost meetingPost, DeletedPostImages deletedPostImages) {
