@@ -5,6 +5,7 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.exception.AuthException;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.exception.MemberException;
+import com.example.univeus.domain.participant.exception.ParticipantException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -45,5 +46,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(Response.failure("FORMAT-001", errorMessage));
+    }
+
+    @ExceptionHandler(ParticipantException.class)
+    public ResponseEntity<Response<String>> handleAuthException(ParticipantException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(Response.failure(ex.getCode(), ex.getMessage()));
     }
 }

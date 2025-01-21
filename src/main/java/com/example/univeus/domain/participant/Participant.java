@@ -12,12 +12,14 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
+@Getter
 public class Participant {
 
     @Id
@@ -43,6 +45,5 @@ public class Participant {
 
     public void addMeetingPost(MeetingPost meetingPost) {
         this.meetingPost = meetingPost;
-        meetingPost.addParticipant(this);
     }
 }

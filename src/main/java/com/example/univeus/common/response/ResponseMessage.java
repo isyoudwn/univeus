@@ -61,8 +61,19 @@ public enum ResponseMessage {
     /* *
      * chatting
      * */
-    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다.")
-    ;
+    READING_CHATTING_HISTORY_SUCCESS("CHAT-000", "채팅 불러오기를 성공했습니다."),
+
+    /* *
+     * participant
+     * */
+    PARTICIPANT_EXCEEDED("PARTICIPANT-000", "참여인원을 초과했습니다."),
+    PARTICIPANT_GENDER_LIMIT("PARTICIPANT-001", "허용하지 않는 성별입니다."),
+    PARTICIPANT_SUCCESS("PARTICIPANT-002", "참여를 성공했습니다."),
+    ALREADY_PARTICIPANT("PARTICIPANT-003", "이미 참여를 한 모임입니다"),
+    NOT_PARTICIPATE_THIS_MEETING("PARTICIPANT-004", "참가하지 않은 모임입니다."),
+    OWNER_CANT_LEAVE_THE_MEETING("PARTICIPANT-005", "방장은 모임에서 탈퇴할 수 없습니다."),
+    REMOVE_PARTICIPANT_SUCCESS("PARTICIPANT-006", "모임을 성공적으로 떠났습니다."),
+    CANT_PARTICIPATE_AFTER_THE_DEADLINE("PARTICIPANT-007", "마감일 이후에 참여할 수 없습니다.");
 
 
     private final String code;
