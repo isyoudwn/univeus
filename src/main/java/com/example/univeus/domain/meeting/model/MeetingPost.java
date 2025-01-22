@@ -50,6 +50,10 @@ public class MeetingPost {
     private Integer joinLimit;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingPostStatus meetingPostStatus;
+
+    @Enumerated(EnumType.STRING)
     private Gender genderLimit;
 
     @Embedded
@@ -91,6 +95,7 @@ public class MeetingPost {
                 .location(location)
                 .postDeadLine(postDeadLine)
                 .meetingSchedule(meetingSchedule)
+                .meetingPostStatus(MeetingPostStatus.RECRUITING)
                 .meetingCategory(meetingCategory)
                 .build();
     }
@@ -99,7 +104,7 @@ public class MeetingPost {
                        Integer joinLimit, Gender genderLimit,
                        Location location, PostDeadline postDeadLine,
                        MeetingSchedule meetingSchedule, MeetingCategory meetingCategory,
-                       List<MeetingPostImage> meetingPostImages) {
+                       List<MeetingPostImage> meetingPostImages, MeetingPostStatus meetingPostStatus) {
         this.title = title;
         this.body = body;
         this.joinLimit = joinLimit;
@@ -109,6 +114,7 @@ public class MeetingPost {
         this.meetingSchedule = meetingSchedule;
         this.meetingCategory = meetingCategory;
         this.images = meetingPostImages;
+        this.meetingPostStatus = meetingPostStatus;
     }
 
     public void addImage(MeetingPostImage meetingPostImage) {

@@ -6,6 +6,7 @@ import com.example.univeus.domain.auth.exception.AuthException;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.participant.exception.ParticipantException;
+import com.example.univeus.domain.scheduler.exception.SchedulingException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -49,7 +50,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ParticipantException.class)
-    public ResponseEntity<Response<String>> handleAuthException(ParticipantException ex) {
+    public ResponseEntity<Response<String>> handleParticipantException(ParticipantException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(Response.failure(ex.getCode(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(SchedulingException.class)
+    public ResponseEntity<Response<String>> handleSchedulingException(SchedulingException ex) {
         return ResponseEntity
                 .badRequest()
                 .body(Response.failure(ex.getCode(), ex.getMessage()));
