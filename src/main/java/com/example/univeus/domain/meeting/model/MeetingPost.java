@@ -1,5 +1,6 @@
 package com.example.univeus.domain.meeting.model;
 
+import com.example.univeus.common.BaseEntity;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.model.Gender;
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MeetingPost {
+public class MeetingPost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

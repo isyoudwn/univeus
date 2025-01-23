@@ -4,6 +4,7 @@ import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostUris;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
 
 public interface MeetingPostService {
     void writePost(Long memberId, MeetingPostContent meetingPostContent, MeetingPostUris meetingPostImages);
@@ -13,4 +14,8 @@ public interface MeetingPostService {
     MeetingPost findById(Long postId);
 
     void updatePost(Long memberId, Long postId, MeetingPostUpdate updateMeetingPost);
+
+    MainPageResponse getMeetingPosts(String cursor, int size);
+
+    MainPageResponse getMeetingPostsOffset(int page, int size);
 }

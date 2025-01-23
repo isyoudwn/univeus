@@ -3,7 +3,7 @@ package com.example.univeus.domain.member.service;
 import com.example.univeus.domain.member.model.Department;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
-import com.example.univeus.presentation.member.dto.request.MemberRequest;
+import com.example.univeus.presentation.member.dto.request.MemberDto;
 import java.util.Optional;
 
 public interface MemberService {
@@ -21,7 +21,7 @@ public interface MemberService {
 
     void updatePhoneNumber(Long memberId, String phoneNumber);
 
-    void registerProfile(Long memberId, MemberRequest.Profile profileRequest);
+    void registerProfile(Long memberId, MemberDto.Profile profileRequest);
 
-    void checkNicknameDuplicated(MemberRequest.Nickname nicknameRequest);
+    void checkNicknameDuplicated(MemberDto.Nickname nicknameRequest);
 }

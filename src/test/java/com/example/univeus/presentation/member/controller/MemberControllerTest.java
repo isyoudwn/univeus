@@ -5,7 +5,6 @@ import static com.example.univeus.common.response.ResponseMessage.PROFILE_REGIST
 import static com.example.univeus.common.response.ResponseMessage.UPDATE_PHONE_NUMBER_SUCCESS;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -17,9 +16,9 @@ import com.example.univeus.common.resolver.AuthenticationResolver;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.presentation.BaseControllerTest;
-import com.example.univeus.presentation.member.dto.request.MemberRequest;
-import com.example.univeus.presentation.member.dto.request.MemberRequest.PhoneNumber;
-import com.example.univeus.presentation.member.dto.request.MemberRequest.Profile;
+import com.example.univeus.presentation.member.dto.request.MemberDto;
+import com.example.univeus.presentation.member.dto.request.MemberDto.PhoneNumber;
+import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +73,7 @@ class MemberControllerTest extends BaseControllerTest {
         @Test
         void 휴대폰_번호_업데이트에_성공한다() throws Exception {
             // given
-            MemberRequest.PhoneNumber phoneNumberRequest = PhoneNumber.of("01012345678");
+            MemberDto.PhoneNumber phoneNumberRequest = PhoneNumber.of("01012345678");
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/v1/member/phone")
@@ -93,7 +92,7 @@ class MemberControllerTest extends BaseControllerTest {
         @ValueSource(strings = {"", " ", "010123467889", "test12345"})
         void 올바르지_않은_요청을_할_경우_예외를_반환한다(String phoneNumber) throws Exception {
             // given
-            MemberRequest.PhoneNumber phoneNumberRequest = MemberRequest.PhoneNumber.of(phoneNumber);
+            MemberDto.PhoneNumber phoneNumberRequest = MemberDto.PhoneNumber.of(phoneNumber);
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/v1/member/phone")
@@ -120,7 +119,7 @@ class MemberControllerTest extends BaseControllerTest {
         @Test
         void 올바른_형식으로_요청을_보낼경우_예외가_발생하지_않는다() throws Exception {
 
-            MemberRequest.Profile profile = Profile.of(
+            MemberDto.Profile profile = Profile.of(
                     "nickname",
                     "department",
                     "gender",
@@ -144,7 +143,7 @@ class MemberControllerTest extends BaseControllerTest {
                 String nickname, String department, String gender, String studentId
         ) throws Exception {
 
-            MemberRequest.Profile profile = Profile.of(
+            MemberDto.Profile profile = Profile.of(
                     nickname,
                     department,
                     gender,
@@ -178,7 +177,7 @@ class MemberControllerTest extends BaseControllerTest {
             void 올바른_형식으로_요청을_보낼경우_예외가_발생하지_않는다() throws Exception {
 
                 // given
-                MemberRequest.Nickname nicknameRequest = MemberRequest.Nickname.of("testNickname");
+                MemberDto.Nickname nicknameRequest = MemberDto.Nickname.of("testNickname");
 
                 // when
                 ResultActions resultActions =
@@ -200,7 +199,7 @@ class MemberControllerTest extends BaseControllerTest {
             void 닉네임이_올바른_입력이_아닐경우_예외를_던진다(String nickname) throws Exception {
 
                 // given
-                MemberRequest.Nickname nicknameRequest = MemberRequest.Nickname.of(nickname);
+                MemberDto.Nickname nicknameRequest = MemberDto.Nickname.of(nickname);
 
                 // when
                 ResultActions resultActions =

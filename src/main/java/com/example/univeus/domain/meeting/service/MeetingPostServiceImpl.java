@@ -19,9 +19,18 @@ import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostUris;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPage;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
+import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,5 +123,64 @@ public class MeetingPostServiceImpl implements MeetingPostService {
             MeetingPostImage meetingPostImage = MeetingPostImage.create(uri);
             meetingPost.addImage(meetingPostImage);
         }
+    }
+
+    @Override
+    public MainPageResponse getMeetingPosts(String cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
+        List<MeetingPostDto.MainPage> result = new ArrayList<>();
+        List<MeetingPost> meetingPosts;
+
+        if (cursor.equals("NONE")) {
+            meetingPosts = meetingPostRepository.findAllByNoneCursor(pageable);
+        } else {
+            meetingPosts = meetingPostRepository.findAllById(Long.valueOf(cursor), pageable);
+        }
+
+        for (MeetingPost meetingPost : meetingPosts) {
+            Member writer = meetingPost.getWriter();
+            Profile profile = Profile.of(
+                    writer.getNickname(), writer.getDepartment().getDepartment(),
+                    writer.getGender().getGender(), writer.getStudentId());
+
+            MainPage mainPage = new MainPage(meetingPost.getTitle(), meetingPost.getJoinLimit(),
+                    meetingPost.getMeetingPostStatus()
+                    , meetingPost.getGenderLimit().getGender(), meetingPost.getPostDeadLine().getPostDeadline(),
+                    meetingPost.getMeetingSchedule().getMeetingSchedule(), profile);
+
+            result.add(mainPage);
+        }
+
+        if (meetingPosts.isEmpty()) {
+            return new MainPageResponse(result, "NONE", false);
+        }
+        String nextCursor = meetingPosts.getLast().getId().toString();
+        return new MainPageResponse(result, nextCursor,true);
+    }
+
+    @Override
+    public MainPageResponse getMeetingPostsOffset(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MeetingPost> meetingPostPage = meetingPostRepository.findAll(pageable);
+        List<MeetingPostDto.MainPage> result = new ArrayList<>();
+
+        for (MeetingPost meetingPost : meetingPostPage.getContent()) {
+            Member writer = meetingPost.getWriter();
+            Profile profile = Profile.of(
+                    writer.getNickname(), writer.getDepartment().getDepartment(),
+                    writer.getGender().getGender(), writer.getStudentId());
+
+            MainPage mainPage = new MainPage(meetingPost.getTitle(), meetingPost.getJoinLimit(),
+                    meetingPost.getMeetingPostStatus()
+                    , meetingPost.getGenderLimit().getGender(), meetingPost.getPostDeadLine().getPostDeadline(),
+                    meetingPost.getMeetingSchedule().getMeetingSchedule(), profile);
+
+            result.add(mainPage);
+        }
+
+        boolean hasNext = meetingPostPage.hasNext();
+        int nextPage = hasNext ? page + 1 : -1;
+
+        return new MainPageResponse(result, String.valueOf(nextPage), hasNext);
     }
 }

@@ -3,15 +3,14 @@ package com.example.univeus.presentation.member.controller;
 import static com.example.univeus.common.response.ResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.PROFILE_REGISTER_SUCCESS;
 import static com.example.univeus.common.response.ResponseMessage.UPDATE_PHONE_NUMBER_SUCCESS;
-import static com.example.univeus.presentation.member.dto.request.MemberRequest.*;
+import static com.example.univeus.presentation.member.dto.request.MemberDto.*;
 
 import com.example.univeus.common.annotation.Auth;
 import com.example.univeus.common.annotation.MemberOnly;
 import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.member.service.MemberService;
-import com.example.univeus.presentation.auth.dto.request.AuthRequest;
-import com.example.univeus.presentation.member.dto.request.MemberRequest;
+import com.example.univeus.presentation.member.dto.request.MemberDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +48,7 @@ public class MemberController {
     @PostMapping("/profile")
     public ResponseEntity<Response<String>> registerProfile(
             @Auth Accessor accessor,
-            @Valid @RequestBody MemberRequest.Profile profileRequest
+            @Valid @RequestBody MemberDto.Profile profileRequest
     ) {
         memberService.registerProfile(accessor.getMemberId(), profileRequest);
         return ResponseEntity
@@ -62,7 +61,7 @@ public class MemberController {
 
     @PostMapping("/nickname/duplicated")
     public ResponseEntity<Response<String>> checkNicknameDuplicated(
-            @Valid @RequestBody MemberRequest.Nickname nicknameRequest
+            @Valid @RequestBody MemberDto.Nickname nicknameRequest
     ) {
         memberService.checkNicknameDuplicated(nicknameRequest);
         return ResponseEntity
