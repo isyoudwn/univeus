@@ -94,4 +94,19 @@ public class MeetingPostController {
                         meetingPosts
                 ));
     }
+
+    @GetMapping("/offsets")
+    public ResponseEntity<Response<MainPageResponse>> getMainPagesByOffset(
+            MainPageRequest.MainPagePageOffset mainPagePage
+    ) {
+        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(Integer.parseInt(mainPagePage.page()),
+                Integer.parseInt(mainPagePage.size()));
+
+        return ResponseEntity.ok()
+                .body(Response.success(
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
+                        meetingPosts
+                ));
+    }
 }

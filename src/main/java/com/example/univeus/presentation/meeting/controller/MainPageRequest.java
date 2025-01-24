@@ -7,4 +7,10 @@ public class MainPageRequest {
             String size
     ) {
     }
+
+    public record MainPagePageOffset(
+            String page,
+            String size
+    ) {
+    }
 }

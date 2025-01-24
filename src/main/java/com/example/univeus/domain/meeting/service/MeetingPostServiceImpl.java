@@ -128,7 +128,6 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     @Override
     public MainPageResponse getMeetingPosts(String cursor, int size) {
         Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
-        List<MeetingPostDto.MainPage> result = new ArrayList<>();
         List<MeetingPost> meetingPosts;
 
         if (cursor.equals("NONE")) {
@@ -137,46 +136,55 @@ public class MeetingPostServiceImpl implements MeetingPostService {
             meetingPosts = meetingPostRepository.findAllById(Long.valueOf(cursor), pageable);
         }
 
-        for (MeetingPost meetingPost : meetingPosts) {
+        List<MainPage> mainPages = meetingPosts.stream().map(meetingPost -> {
             Member writer = meetingPost.getWriter();
             Profile profile = Profile.of(
                     writer.getNickname(), writer.getDepartment().getDepartment(),
                     writer.getGender().getGender(), writer.getStudentId());
 
-            MainPage mainPage = new MainPage(meetingPost.getTitle(), meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus()
-                    , meetingPost.getGenderLimit().getGender(), meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(), profile);
-
-            result.add(mainPage);
-        }
+            return new MainPage(
+                    meetingPost.getTitle(),
+                    meetingPost.getJoinLimit(),
+                    meetingPost.getMeetingPostStatus(),
+                    meetingPost.getGenderLimit().getGender(),
+                    meetingPost.getPostDeadLine().getPostDeadline(),
+                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
+                    profile);
+        }).toList();
 
         if (meetingPosts.isEmpty()) {
-            return new MainPageResponse(result, "NONE", false);
+            return new MainPageResponse(mainPages, "NONE", false);
         }
+
         String nextCursor = meetingPosts.getLast().getId().toString();
-        return new MainPageResponse(result, nextCursor,true);
+        return new MainPageResponse(mainPages, nextCursor, true);
     }
 
     @Override
     public MainPageResponse getMeetingPostsOffset(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MeetingPost> meetingPostPage = meetingPostRepository.findAll(pageable);
-        List<MeetingPostDto.MainPage> result = new ArrayList<>();
+        Page<MeetingPost> meetingPostPage = meetingPostRepository.findAllByOrderByIdDesc(pageable);
 
-        for (MeetingPost meetingPost : meetingPostPage.getContent()) {
+        List<MeetingPostDto.MainPage> result = meetingPostPage.getContent().stream().map(meetingPost -> {
+
             Member writer = meetingPost.getWriter();
             Profile profile = Profile.of(
-                    writer.getNickname(), writer.getDepartment().getDepartment(),
-                    writer.getGender().getGender(), writer.getStudentId());
+                    writer.getNickname(),
+                    writer.getDepartment().getDepartment(),
+                    writer.getGender().getGender(),
+                    writer.getStudentId()
+            );
 
-            MainPage mainPage = new MainPage(meetingPost.getTitle(), meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus()
-                    , meetingPost.getGenderLimit().getGender(), meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(), profile);
-
-            result.add(mainPage);
-        }
+            return new MeetingPostDto.MainPage(
+                    meetingPost.getTitle(),
+                    meetingPost.getJoinLimit(),
+                    meetingPost.getMeetingPostStatus(),
+                    meetingPost.getGenderLimit().getGender(),
+                    meetingPost.getPostDeadLine().getPostDeadline(),
+                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
+                    profile
+            );
+        }).toList();
 
         boolean hasNext = meetingPostPage.hasNext();
         int nextPage = hasNext ? page + 1 : -1;
