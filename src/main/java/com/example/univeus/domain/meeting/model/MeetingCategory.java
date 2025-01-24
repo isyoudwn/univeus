@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MeetingCategory {
     STUDY("스터디모집"),
-
     MEETING("모임"),
     ETC("기타");
 

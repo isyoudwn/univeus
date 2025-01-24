@@ -82,10 +82,12 @@ public class MeetingPostController {
 
     @GetMapping("/posts")
     public ResponseEntity<Response<MainPageResponse>> getMainPages(
-            MainPageRequest.MainPagePage mainPagePage
+            MainPageRequest.MainPageCursor mainPageCursor
     ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPosts(mainPagePage.id(),
-                Integer.parseInt(mainPagePage.size()));
+        MainPageResponse meetingPosts = meetingPostService.getMeetingPosts(
+                mainPageCursor.id(),
+                mainPageCursor.category(),
+                Integer.parseInt(mainPageCursor.size()));
 
         return ResponseEntity.ok()
                 .body(Response.success(
@@ -97,10 +99,12 @@ public class MeetingPostController {
 
     @GetMapping("/offsets")
     public ResponseEntity<Response<MainPageResponse>> getMainPagesByOffset(
-            MainPageRequest.MainPagePageOffset mainPagePage
+            MainPageRequest.MainPageOffset mainPageOffset
     ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(Integer.parseInt(mainPagePage.page()),
-                Integer.parseInt(mainPagePage.size()));
+        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(
+                mainPageOffset.category(),
+                Integer.parseInt(mainPageOffset.page()),
+                Integer.parseInt(mainPageOffset.size()));
 
         return ResponseEntity.ok()
                 .body(Response.success(

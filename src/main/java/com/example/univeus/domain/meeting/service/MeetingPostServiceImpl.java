@@ -4,6 +4,7 @@ import static com.example.univeus.common.response.ResponseMessage.MEETING_POST_N
 
 import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
+import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingPostImage;
 import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
@@ -25,7 +26,6 @@ import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.Main
 import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -126,15 +126,14 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     }
 
     @Override
-    public MainPageResponse getMeetingPosts(String cursor, int size) {
+    public MainPageResponse getMeetingPosts(String cursor, String category, int size) {
         Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
-        List<MeetingPost> meetingPosts;
 
-        if (cursor.equals("NONE")) {
-            meetingPosts = meetingPostRepository.findAllByNoneCursor(pageable);
-        } else {
-            meetingPosts = meetingPostRepository.findAllById(Long.valueOf(cursor), pageable);
-        }
+        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
+        Long findCursor = (!cursor.equals("none")) ? Long.valueOf(cursor) : null;
+
+        List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory, findCursor,
+                pageable);
 
         List<MainPage> mainPages = meetingPosts.stream().map(meetingPost -> {
             Member writer = meetingPost.getWriter();
@@ -149,6 +148,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
                     meetingPost.getGenderLimit().getGender(),
                     meetingPost.getPostDeadLine().getPostDeadline(),
                     meetingPost.getMeetingSchedule().getMeetingSchedule(),
+                    meetingPost.getMeetingCategory(),
                     profile);
         }).toList();
 
@@ -161,9 +161,11 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     }
 
     @Override
-    public MainPageResponse getMeetingPostsOffset(int page, int size) {
+    public MainPageResponse getMeetingPostsOffset(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MeetingPost> meetingPostPage = meetingPostRepository.findAllByOrderByIdDesc(pageable);
+        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
+
+        Page<MeetingPost> meetingPostPage = meetingPostRepository.findByCategoryAndOffset(meetingCategory, pageable);
 
         List<MeetingPostDto.MainPage> result = meetingPostPage.getContent().stream().map(meetingPost -> {
 
@@ -182,6 +184,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
                     meetingPost.getGenderLimit().getGender(),
                     meetingPost.getPostDeadLine().getPostDeadline(),
                     meetingPost.getMeetingSchedule().getMeetingSchedule(),
+                    meetingPost.getMeetingCategory(),
                     profile
             );
         }).toList();

@@ -15,7 +15,7 @@ public interface MeetingPostService {
 
     void updatePost(Long memberId, Long postId, MeetingPostUpdate updateMeetingPost);
 
-    MainPageResponse getMeetingPosts(String cursor, int size);
+    MainPageResponse getMeetingPosts(String cursor, String category, int size);
 
-    MainPageResponse getMeetingPostsOffset(int page, int size);
+    MainPageResponse getMeetingPostsOffset(String category, int page, int size);
 }
