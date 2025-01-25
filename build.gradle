@@ -60,6 +60,10 @@ dependencies {
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// json 직렬화
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// AWS SDK S3 의존성 추가
