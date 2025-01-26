@@ -51,6 +51,7 @@ public enum ResponseMessage {
     MEETING_BAD_REQUEST("MEETING-007", "권한이 없습니다."),
     DELETE_MEETING_SUCCESS("MEETING-008", "모임 글 삭제를 성공했습니다."),
     UPDATE_MEETING_SUCCESS("MEETING-009", "모임 글 수정을 성공했습니다."),
+    MAIN_PAGE_RENDERING_SUCCESS("MEEING-010", "메인 페이지 조회를 성공했습니다."),
 
     /* *
      * image

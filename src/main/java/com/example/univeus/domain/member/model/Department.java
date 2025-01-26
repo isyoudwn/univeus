@@ -3,9 +3,11 @@ package com.example.univeus.domain.member.model;
 import static com.example.univeus.common.response.ResponseMessage.*;
 
 import com.example.univeus.domain.member.exception.MemberException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public enum Department {
 
     HUMANITY("인문대학"),

@@ -8,10 +8,12 @@ import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +77,40 @@ public class MeetingPostController {
                 .body(Response.success(
                         ResponseMessage.UPDATE_MEETING_SUCCESS.getCode(),
                         ResponseMessage.UPDATE_MEETING_SUCCESS.getMessage()
+                ));
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<Response<MainPageResponse>> getMainPages(
+            MainPageRequest.MainPageCursor mainPageCursor
+    ) {
+        MainPageResponse meetingPosts = meetingPostService.getMeetingPosts(
+                mainPageCursor.id(),
+                mainPageCursor.category(),
+                Integer.parseInt(mainPageCursor.size()));
+
+        return ResponseEntity.ok()
+                .body(Response.success(
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
+                        meetingPosts
+                ));
+    }
+
+    @GetMapping("/offsets")
+    public ResponseEntity<Response<MainPageResponse>> getMainPagesByOffset(
+            MainPageRequest.MainPageOffset mainPageOffset
+    ) {
+        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(
+                mainPageOffset.category(),
+                Integer.parseInt(mainPageOffset.page()),
+                Integer.parseInt(mainPageOffset.size()));
+
+        return ResponseEntity.ok()
+                .body(Response.success(
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
+                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
+                        meetingPosts
                 ));
     }
 }
