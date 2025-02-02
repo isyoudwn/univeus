@@ -1,6 +1,7 @@
 package com.example.univeus.domain.meeting.service;
 
 import static com.example.univeus.common.response.ResponseMessage.MEETING_POST_NOT_FOUND;
+import static com.example.univeus.common.response.ResponseMessage.MEMBER_BAD_REQUEST;
 
 import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
@@ -8,8 +9,11 @@ import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingPostImage;
 import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.ImageUriDTO;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailDTO;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
 import com.example.univeus.domain.meeting.service.dto.mapper.MeetingPostMapper;
+import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostImageDTO;
@@ -27,6 +31,7 @@ import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +54,9 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         Member currentMember = memberService.findById(memberId);
         MeetingPost meetingPost = findById(postId);
 
-        currentMember.isMine(meetingPost.getWriter());
+        if (!currentMember.isMine(meetingPost.getWriter())) {
+            throw new MemberException(MEMBER_BAD_REQUEST);
+        }
 
         meetingPostRepository.delete(meetingPost);
         quartzService.deleteJob(postId.toString());
@@ -74,7 +81,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     @Override
     @Transactional(readOnly = true)
     public MeetingPost findById(Long postId) {
-        return meetingPostRepository.findById(postId)
+        return meetingPostRepository.findByIdWithInfo(postId)
                 .orElseThrow(() -> new MeetingException(MEETING_POST_NOT_FOUND));
     }
 
@@ -83,7 +90,11 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     public void updatePost(Long memberId, Long postId, MeetingPostUpdate meetingPostUpdate) {
         Member currentMember = memberService.findById(memberId);
         MeetingPost meetingPost = findById(postId);
-        currentMember.isMine(meetingPost.getWriter());
+
+        if (!currentMember.isMine(meetingPost.getWriter())) {
+            throw new MemberException(MEMBER_BAD_REQUEST);
+        }
+        ;
 
         deleteImages(meetingPost, meetingPostUpdate.deletedPostImages());
         addImages(meetingPost, meetingPostUpdate.newMeetingPostUris());
@@ -193,5 +204,31 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         int nextPage = hasNext ? page + 1 : -1;
 
         return new MainPageResponse(result, String.valueOf(nextPage), hasNext);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MeetingPostDetailResponse readPost(Long memberId, Long postId) {
+        MeetingPost meetingPost = findById(postId);
+        Member currentMember = memberService.findById(memberId);
+        Boolean isMine = currentMember.isMine(meetingPost.getWriter());
+
+        MeetingPostDetailDTO meetingPostDetail = new MeetingPostDetailDTO(
+                meetingPost.getTitle(),
+                meetingPost.getBody(),
+                meetingPost.getGenderLimit(),
+                meetingPost.getJoinLimit(),
+                meetingPost.getMeetingCategory(),
+                meetingPost.getPostDeadLine(),
+                meetingPost.getMeetingSchedule(),
+                meetingPost.getLocation()
+        );
+
+        List<ImageUriDTO> images = meetingPost.getImages()
+                .stream()
+                .map((image) -> new ImageUriDTO(image.getUri()))
+                .toList();
+
+        return new MeetingPostDetailResponse(meetingPostDetail, isMine, images);
     }
 }

@@ -93,9 +93,7 @@ public class Member {
         this.phoneNumber = phoneNumber;
     }
 
-    public void isMine(Member writer) {
-        if (!Objects.equals(this.getId(), writer.getId())) {
-            throw new MemberException(MEMBER_BAD_REQUEST);
-        }
+    public Boolean isMine(Member writer) {
+        return Objects.equals(this.getId(), writer.getId());
     }
 }

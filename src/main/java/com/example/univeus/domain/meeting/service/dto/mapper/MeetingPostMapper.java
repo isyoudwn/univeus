@@ -77,7 +77,6 @@ public class MeetingPostMapper {
                 meetingCategory,
                 postDeadline,
                 meetingSchedule,
-                coordinate,
                 location);
     }
 }
