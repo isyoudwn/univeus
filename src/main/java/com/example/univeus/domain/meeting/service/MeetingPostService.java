@@ -1,6 +1,7 @@
 package com.example.univeus.domain.meeting.service;
 
 import com.example.univeus.domain.meeting.model.MeetingPost;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostUris;
@@ -18,4 +19,6 @@ public interface MeetingPostService {
     MainPageResponse getMeetingPosts(String cursor, String category, int size);
 
     MainPageResponse getMeetingPostsOffset(String category, int page, int size);
+
+    MeetingPostDetailResponse readPost(Long memberId, Long aLong);
 }

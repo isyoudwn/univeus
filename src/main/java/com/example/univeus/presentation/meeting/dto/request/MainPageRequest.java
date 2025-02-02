@@ -1,4 +1,4 @@
-package com.example.univeus.presentation.meeting.controller;
+package com.example.univeus.presentation.meeting.dto.request;
 
 public class MainPageRequest {
 

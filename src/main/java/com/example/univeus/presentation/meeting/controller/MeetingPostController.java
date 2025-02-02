@@ -6,6 +6,8 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
+import com.example.univeus.presentation.meeting.dto.request.MainPageRequest;
 import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest;
 import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
@@ -112,5 +114,25 @@ public class MeetingPostController {
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
                         meetingPosts
                 ));
+    }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<Response<MeetingPostDetailResponse>> getPost(
+            @Auth Accessor accessor,
+            @PathVariable String postId
+    ) {
+        Long memberId = 1L;
+//        Long memberId = accessor.getMemberId();
+        MeetingPostDetailResponse meetingPostDetail = meetingPostService.readPost(memberId, Long.valueOf(postId));
+
+        return ResponseEntity
+                .ok()
+                .body(
+                        Response.success(
+                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                                meetingPostDetail
+                        ));
+
     }
 }
