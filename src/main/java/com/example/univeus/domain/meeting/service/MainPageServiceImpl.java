@@ -17,17 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MainPageServiceImpl implements MainPageService {
+    private static final Integer SIZE = 20;
     private final MeetingPostRepository meetingPostRepository;
 
     @Override
-    public MainPageResponse.MainPage getMainPage(String cursor, String category, int size) {
-        Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
-
-        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
-        Long findCursor = (!cursor.equals("none")) ? Long.valueOf(cursor) : null;
-
+    public MainPageResponse.MainPage getMainPage(Long cursor, MeetingCategory meetingCategory) {
+        Pageable pageable = PageRequest.of(0, SIZE); // 페이지 크기만 지정
         List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory,
-                findCursor,
+                cursor,
                 pageable);
 
         List<MainPageDetail> mainPages = meetingPosts.stream().map(meetingPost -> {
@@ -56,8 +53,8 @@ public class MainPageServiceImpl implements MainPageService {
     }
 
     @Override
-    public MainPageResponse.MainPage getMainPageOffset(String category, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public MainPageResponse.MainPage getMainPageOffset(String category, int page) {
+        Pageable pageable = PageRequest.of(page, SIZE);
         MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
 
         Page<MeetingPost> meetingPostPage = meetingPostRepository.findByCategoryAndOffset(meetingCategory, pageable);

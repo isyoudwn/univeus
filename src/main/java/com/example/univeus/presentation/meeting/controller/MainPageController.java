@@ -25,8 +25,7 @@ public class MainPageController {
     ) {
         MainPageResponse.MainPage mainPage = mainPageService.getMainPage(
                 mainPageCursor.id(),
-                mainPageCursor.category(),
-                Integer.parseInt(mainPageCursor.size()));
+                mainPageCursor.meetingCategory());
 
         return ResponseEntity
                 .ok()
@@ -43,8 +42,7 @@ public class MainPageController {
     ) {
         MainPageResponse.MainPage mainPage = mainPageService.getMainPageOffset(
                 mainPageOffset.category(),
-                Integer.parseInt(mainPageOffset.page()),
-                Integer.parseInt(mainPageOffset.size()));
+                Integer.parseInt(mainPageOffset.page()));
 
         return ResponseEntity
                 .ok()
