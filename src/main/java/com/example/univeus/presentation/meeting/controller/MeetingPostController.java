@@ -6,10 +6,10 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
 import com.example.univeus.presentation.meeting.dto.request.MainPageRequest;
-import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
-import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
+import com.example.univeus.presentation.meeting.dto.request.MeetingPostRequest;
+import com.example.univeus.presentation.meeting.dto.response.MainPageResponse;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class MeetingPostController {
     @PostMapping("/post")
     public ResponseEntity<Response<String>> writeMeetingPost(
             @Auth Accessor accessor,
-            @Valid @RequestBody MeetingRequest.Write writeRequest
+            @Valid @RequestBody MeetingPostRequest.Write writeRequest
     ) {
         Long memberId = accessor.getMemberId();
         meetingPostService.writePost(memberId, writeRequest.meetingPostContent(),
@@ -69,7 +69,7 @@ public class MeetingPostController {
     public ResponseEntity<Response<String>> updateMeetingPost(
             @Auth Accessor accessor,
             @PathVariable String postId,
-            @Valid @RequestBody MeetingRequest.Update updateRequest
+            @Valid @RequestBody MeetingPostRequest.Update updateRequest
     ) {
         Long memberId = accessor.getMemberId();
         meetingPostService.updatePost(memberId, Long.valueOf(postId), updateRequest);
@@ -83,10 +83,10 @@ public class MeetingPostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<Response<MainPageResponse>> getMainPages(
+    public ResponseEntity<Response<MainPageResponse.MainPage>> getMainPages(
             MainPageRequest.MainPageCursor mainPageCursor
     ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPosts(
+        MainPageResponse.MainPage mainPage = meetingPostService.getMeetingPosts(
                 mainPageCursor.id(),
                 mainPageCursor.category(),
                 Integer.parseInt(mainPageCursor.size()));
@@ -95,15 +95,15 @@ public class MeetingPostController {
                 .body(Response.success(
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
-                        meetingPosts
+                        mainPage
                 ));
     }
 
     @GetMapping("/offsets")
-    public ResponseEntity<Response<MainPageResponse>> getMainPagesByOffset(
+    public ResponseEntity<Response<MainPageResponse.MainPage>> getMainPagesByOffset(
             MainPageRequest.MainPageOffset mainPageOffset
     ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(
+        MainPageResponse.MainPage mainPage = meetingPostService.getMeetingPostsOffset(
                 mainPageOffset.category(),
                 Integer.parseInt(mainPageOffset.page()),
                 Integer.parseInt(mainPageOffset.size()));
@@ -112,17 +112,17 @@ public class MeetingPostController {
                 .body(Response.success(
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
-                        meetingPosts
+                        mainPage
                 ));
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<Response<MeetingPostDetailResponse>> getPost(
+    public ResponseEntity<Response<MeetingPostResponse.MeetingPost>> getPost(
             @Auth Accessor accessor,
             @PathVariable String postId
     ) {
         Long memberId = accessor.getMemberId();
-        MeetingPostDetailResponse meetingPostDetail = meetingPostService.readPost(memberId, Long.valueOf(postId));
+        MeetingPostResponse.MeetingPost meetingPost = meetingPostService.readPost(memberId, Long.valueOf(postId));
 
         return ResponseEntity
                 .ok()
@@ -130,7 +130,7 @@ public class MeetingPostController {
                         Response.success(
                                 ResponseMessage.READ_MEETING_SUCCESS.getCode(),
                                 ResponseMessage.READ_MEETING_SUCCESS.getCode(),
-                                meetingPostDetail
+                                meetingPost
                         ));
 
     }

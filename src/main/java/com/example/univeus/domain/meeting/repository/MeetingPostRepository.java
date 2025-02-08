@@ -14,7 +14,7 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
 
     // 패치 조인을 이용한 n+1문제 해결
     @Query("SELECT m FROM MeetingPost m " +
-            "JOIN FETCH m.images " +
+            "LEFT JOIN FETCH m.images " +
             "JOIN FETCH m.writer " +
             "WHERE m.id = :postId")
     Optional<MeetingPost> findByIdWithInfo(@Param("postId") Long postId);

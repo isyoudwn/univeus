@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-public class MeetingRequest {
+public class MeetingPostRequest {
     public record Update(
             MeetingPostContent meetingPostContent,
             MeetingPostImagesUris newMeetingPostUris,

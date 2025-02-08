@@ -6,18 +6,18 @@ import com.example.univeus.presentation.member.dto.request.MemberDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class MeetingPostDto {
-    public record MainPageResponse(
-            List<MainPage> mainPage,
+public class MainPageResponse {
+
+    public record MainPage(
+            List<MainPageDetail> mainPage,
             String cursor,
             Boolean hasNext
     ) {
     }
 
-    public record MainPage(
+    public record MainPageDetail(
             String title,
             Integer joinLimit,
-//            Integer nowParticipantsCount,
             MeetingPostStatus meetingPostStatus,
             String genderLimit,
             LocalDateTime postDeadline,

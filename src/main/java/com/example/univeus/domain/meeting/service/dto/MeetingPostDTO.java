@@ -5,18 +5,9 @@ import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingSchedule;
 import com.example.univeus.domain.meeting.model.PostDeadline;
 import com.example.univeus.domain.member.model.Gender;
-import java.util.List;
 
 public class MeetingPostDTO {
-
-    public record MeetingPostDetailResponse(
-            MeetingPostDetailDTO meetingPostDetail,
-            Boolean isMyPost,
-            List<ImageUriDTO> postImage
-    ) {
-    }
-
-    public record MeetingPostDetailDTO(
+    public record MeetingPostDetail(
             String title,
             String body,
             Gender genderLimit,
@@ -25,11 +16,6 @@ public class MeetingPostDTO {
             PostDeadline postDeadline,
             MeetingSchedule meetingSchedule,
             Location location
-    ) {
-    }
-
-    public record ImageUriDTO(
-            String uri
     ) {
     }
 }
