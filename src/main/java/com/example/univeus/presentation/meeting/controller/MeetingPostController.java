@@ -8,8 +8,7 @@ import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
 import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
 import com.example.univeus.presentation.meeting.dto.request.MainPageRequest;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest;
+import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +33,12 @@ public class MeetingPostController {
     @PostMapping("/post")
     public ResponseEntity<Response<String>> writeMeetingPost(
             @Auth Accessor accessor,
-            @Valid @RequestBody MeetingWriteRequest.MeetingPostWrite meetingPostWrite
+            @Valid @RequestBody MeetingRequest.Write writeRequest
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.writePost(memberId, meetingPostWrite.meetingPostContent(),
-                meetingPostWrite.meetingPostUris());
+        meetingPostService.writePost(memberId, writeRequest.meetingPostContent(),
+                writeRequest.meetingPostUris());
+
         return ResponseEntity
                 .ok()
                 .body(Response.success(
@@ -69,10 +69,10 @@ public class MeetingPostController {
     public ResponseEntity<Response<String>> updateMeetingPost(
             @Auth Accessor accessor,
             @PathVariable String postId,
-            @Valid @RequestBody MeetingUpdateRequest.MeetingPostUpdate meetingPostUpdate
+            @Valid @RequestBody MeetingRequest.Update updateRequest
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.updatePost(memberId, Long.valueOf(postId), meetingPostUpdate);
+        meetingPostService.updatePost(memberId, Long.valueOf(postId), updateRequest);
 
         return ResponseEntity
                 .ok()
@@ -121,8 +121,7 @@ public class MeetingPostController {
             @Auth Accessor accessor,
             @PathVariable String postId
     ) {
-        Long memberId = 1L;
-//        Long memberId = accessor.getMemberId();
+        Long memberId = accessor.getMemberId();
         MeetingPostDetailResponse meetingPostDetail = meetingPostService.readPost(memberId, Long.valueOf(postId));
 
         return ResponseEntity

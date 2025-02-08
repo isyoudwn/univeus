@@ -16,14 +16,10 @@ import com.example.univeus.domain.meeting.service.dto.mapper.MeetingPostMapper;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostImageDTO;
 import com.example.univeus.domain.participant.model.Participant;
 import com.example.univeus.domain.participant.model.ParticipantRole;
 import com.example.univeus.domain.scheduler.service.QuartzService;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.DeletedPostImages;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostUris;
+import com.example.univeus.presentation.meeting.dto.request.MeetingRequest;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPage;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
@@ -63,7 +59,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     @Override
     @Transactional
-    public void writePost(Long writerId, MeetingPostContent meetingPostContent, MeetingPostUris meetingPostUris) {
+    public void writePost(Long writerId, MeetingRequest.MeetingPostContent meetingPostContent, MeetingRequest.MeetingPostImagesUris meetingPostUris) {
         LocalDateTime now = LocalDateTime.now(clock);
         Member currentMember = memberService.findById(writerId);
         MeetingPost meetingPost = MeetingPostMapper.toMeetingPost(currentMember, meetingPostContent, now);
@@ -86,19 +82,18 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     @Override
     @Transactional
-    public void updatePost(Long memberId, Long postId, MeetingPostUpdate meetingPostUpdate) {
+    public void updatePost(Long memberId, Long postId, MeetingRequest.Update meetingPostUpdate) {
         Member currentMember = memberService.findById(memberId);
         MeetingPost meetingPost = findById(postId);
 
         if (!currentMember.isMine(meetingPost.getWriter())) {
             throw new MemberException(MEMBER_BAD_REQUEST);
         }
-        ;
 
         deleteImages(meetingPost, meetingPostUpdate.deletedPostImages());
         addImages(meetingPost, meetingPostUpdate.newMeetingPostUris());
 
-        MeetingPostContent meetingPostContent = meetingPostUpdate.meetingPostContent();
+        MeetingRequest.MeetingPostContent meetingPostContent = meetingPostUpdate.meetingPostContent();
         LocalDateTime now = LocalDateTime.now(clock);
         MeetingPostDetailDTO meetingPostDetail = MeetingPostMapper.toMeetingPostDetail(
                 meetingPostContent, now);
@@ -119,15 +114,15 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         quartzService.updateSchedule(postId.toString(), TimeUtil.localDateTimeToDate(meetingPostDetail.postDeadline().getPostDeadline(), clock));
     }
 
-    private void deleteImages(MeetingPost meetingPost, DeletedPostImages deletedPostImages) {
+    private void deleteImages(MeetingPost meetingPost, MeetingRequest.DeletedPostImages deletedPostImages) {
         // 상위 메서드의 트랜잭션에 합류
-        for (MeetingPostImageDTO image : deletedPostImages.images()) {
-            Long postImageId = Long.valueOf(image.id());
+        for (String id : deletedPostImages.ids()) {
+            Long postImageId = Long.valueOf(id);
             meetingPost.deleteImages(postImageId);
         }
     }
 
-    private void addImages(MeetingPost meetingPost, MeetingPostUris meetingPostUris) {
+    private void addImages(MeetingPost meetingPost, MeetingRequest.MeetingPostImagesUris meetingPostUris) {
         // 상위 메서드의 트랜잭션에 합류
         for (String uri : meetingPostUris.uris()) {
             MeetingPostImage meetingPostImage = MeetingPostImage.create(uri);
