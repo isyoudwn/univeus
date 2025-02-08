@@ -2,7 +2,7 @@ package com.example.univeus.domain.participant.repository;
 
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.member.model.Member;
-import com.example.univeus.domain.participant.Participant;
+import com.example.univeus.domain.participant.model.Participant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

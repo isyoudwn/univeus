@@ -3,11 +3,12 @@ package com.example.univeus.domain.auth;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.univeus.common.config.JwtProperties;
-import com.example.univeus.common.config.KeyConfig;
 import com.example.univeus.domain.auth.dto.UserTokens;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import java.time.Clock;
 import java.time.ZoneId;
+import javax.crypto.SecretKey;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +30,8 @@ class TokenProviderTest {
     @BeforeEach
     void setUp() {
         Clock clock = Clock.system(ZoneId.of("Asia/Seoul"));
-        KeyConfig keyConfig = new KeyConfig();
-        tokenProvider = new TokenProvider(jwtProperties, clock, keyConfig);
+        SecretKey secretKey = Jwts.SIG.HS256.key().build();
+        tokenProvider = new TokenProvider(jwtProperties, clock, secretKey);
 
     }
 
