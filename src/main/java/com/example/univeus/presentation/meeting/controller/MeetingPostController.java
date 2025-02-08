@@ -91,7 +91,8 @@ public class MeetingPostController {
                 mainPageCursor.category(),
                 Integer.parseInt(mainPageCursor.size()));
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .ok()
                 .body(Response.success(
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
@@ -108,7 +109,8 @@ public class MeetingPostController {
                 Integer.parseInt(mainPageOffset.page()),
                 Integer.parseInt(mainPageOffset.size()));
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .ok()
                 .body(Response.success(
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
                         ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
@@ -126,12 +128,10 @@ public class MeetingPostController {
 
         return ResponseEntity
                 .ok()
-                .body(
-                        Response.success(
-                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
-                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
-                                meetingPost
-                        ));
-
+                .body(Response.success(
+                        ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                        ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                        meetingPost
+                ));
     }
 }
