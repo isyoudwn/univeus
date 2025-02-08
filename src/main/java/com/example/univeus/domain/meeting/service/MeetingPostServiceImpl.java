@@ -5,7 +5,6 @@ import static com.example.univeus.common.response.ResponseMessage.MEMBER_BAD_REQ
 
 import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
-import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingPostImage;
 import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
@@ -18,17 +17,11 @@ import com.example.univeus.domain.participant.model.Participant;
 import com.example.univeus.domain.participant.model.ParticipantRole;
 import com.example.univeus.domain.scheduler.service.QuartzService;
 import com.example.univeus.presentation.meeting.dto.request.MeetingPostRequest;
-import com.example.univeus.presentation.meeting.dto.response.MainPageResponse;
-import com.example.univeus.presentation.meeting.dto.response.MainPageResponse.MainPageDetail;
 import com.example.univeus.presentation.meeting.dto.response.MeetingPostResponse;
-import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,77 +119,6 @@ public class MeetingPostServiceImpl implements MeetingPostService {
             MeetingPostImage meetingPostImage = MeetingPostImage.create(uri);
             meetingPost.addImage(meetingPostImage);
         }
-    }
-
-    @Override
-    public MainPageResponse.MainPage getMeetingPosts(String cursor, String category, int size) {
-        Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
-
-        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
-        Long findCursor = (!cursor.equals("none")) ? Long.valueOf(cursor) : null;
-
-        List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory,
-                findCursor,
-                pageable);
-
-        List<MainPageDetail> mainPages = meetingPosts.stream().map(meetingPost -> {
-            Member writer = meetingPost.getWriter();
-            Profile profile = Profile.of(
-                    writer.getNickname(), writer.getDepartment().getDepartment(),
-                    writer.getGender().getGender(), writer.getStudentId());
-
-            return new MainPageDetail(
-                    meetingPost.getTitle(),
-                    meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus(),
-                    meetingPost.getGenderLimit().getGender(),
-                    meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
-                    meetingPost.getMeetingCategory(),
-                    profile);
-        }).toList();
-
-        if (meetingPosts.isEmpty()) {
-            return new MainPageResponse.MainPage(mainPages, "NONE", false);
-        }
-
-        String nextCursor = meetingPosts.getLast().getId().toString();
-        return new MainPageResponse.MainPage(mainPages, nextCursor, true);
-    }
-
-    @Override
-    public MainPageResponse.MainPage getMeetingPostsOffset(String category, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
-
-        Page<MeetingPost> meetingPostPage = meetingPostRepository.findByCategoryAndOffset(meetingCategory, pageable);
-
-        List<MainPageResponse.MainPageDetail> result = meetingPostPage.getContent().stream().map(meetingPost -> {
-
-            Member writer = meetingPost.getWriter();
-            Profile profile = Profile.of(
-                    writer.getNickname(),
-                    writer.getDepartment().getDepartment(),
-                    writer.getGender().getGender(),
-                    writer.getStudentId()
-            );
-
-            return new MainPageResponse.MainPageDetail(
-                    meetingPost.getTitle(),
-                    meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus(),
-                    meetingPost.getGenderLimit().getGender(),
-                    meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
-                    meetingPost.getMeetingCategory(),
-                    profile
-            );
-        }).toList();
-
-        boolean hasNext = meetingPostPage.hasNext();
-        int nextPage = hasNext ? page + 1 : -1;
-
-        return new MainPageResponse.MainPage(result, String.valueOf(nextPage), hasNext);
     }
 
     @Override

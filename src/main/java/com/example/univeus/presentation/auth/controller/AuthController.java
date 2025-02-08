@@ -3,8 +3,6 @@ package com.example.univeus.presentation.auth.controller;
 import static com.example.univeus.common.response.ResponseMessage.*;
 import static com.example.univeus.presentation.auth.dto.request.AuthRequest.*;
 
-import com.example.univeus.common.annotation.Auth;
-import com.example.univeus.common.annotation.MemberOnly;
 import com.example.univeus.common.response.Response;
 import com.example.univeus.domain.auth.dto.AccessToken;
 import com.example.univeus.domain.auth.service.AuthService;
