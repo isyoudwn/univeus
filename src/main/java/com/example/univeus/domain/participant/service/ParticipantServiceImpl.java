@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -35,25 +36,24 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Override
     @Transactional
     public void participate(Long postId, Long memberId) {
-        MeetingPost meetingPost = meetingPostService.findById(postId);
-        List<Participant> participants = participantRepository.findByMeetingPost(meetingPost);
+        MeetingPost meetingPost = meetingPostService.findByIdWithLock(postId);
+        List<Participant> participants = meetingPost.getParticipants();
+        Member member = memberService.findById(memberId);
+
+        if (isAlreadyParticipate(participants, member)) {
+            throw new ParticipantException(ALREADY_PARTICIPANT);
+        }
 
         if (meetingPost.getJoinLimit() < participants.size() + 1) {
             throw new ParticipantException(PARTICIPANT_EXCEEDED);
         }
 
-        if (meetingPost.getPostDeadLine().getPostDeadline().isAfter(LocalDateTime.now(clock))) {
+        if (meetingPost.getPostDeadLine().getPostDeadline().isBefore(LocalDateTime.now(clock))) {
             throw new ParticipantException(CANT_PARTICIPATE_AFTER_THE_DEADLINE);
         }
 
-        Member member = memberService.findById(memberId);
-
         if (meetingPost.getGenderLimit() != Gender.NONE && meetingPost.getGenderLimit() != member.getGender()) {
             throw new ParticipantException(PARTICIPANT_GENDER_LIMIT);
-        }
-
-        if (isAlreadyParticipate(participants, member)) {
-            throw new ParticipantException(ALREADY_PARTICIPANT);
         }
 
         Participant participant = Participant.create(member, meetingPost, ParticipantRole.PARTICIPANT);
@@ -76,7 +76,6 @@ public class ParticipantServiceImpl implements ParticipantService {
         participantRepository.delete(participant);
     }
 
-    @Transactional
     public Boolean isAlreadyParticipate(List<Participant> participants, Member member) {
         return participants.stream()
                 .anyMatch(participant -> participant.getMember().equals(member));

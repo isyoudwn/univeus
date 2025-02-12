@@ -50,24 +50,34 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     @Override
     @Transactional
-    public void writePost(Long writerId, MeetingPostRequest.MeetingPostContent meetingPostContent, MeetingPostRequest.MeetingPostImagesUris meetingPostUris) {
+    public MeetingPost writePost(Long writerId, MeetingPostRequest.MeetingPostContent meetingPostContent,
+                                 MeetingPostRequest.MeetingPostImagesUris meetingPostUris) {
         LocalDateTime now = LocalDateTime.now(clock);
         Member currentMember = memberService.findById(writerId);
         MeetingPost meetingPost = MeetingPostMapper.toMeetingPost(currentMember, meetingPostContent, now);
-        Participant participant  = Participant.create(currentMember, meetingPost, ParticipantRole.OWNER);
+        Participant participant = Participant.create(currentMember, meetingPost, ParticipantRole.OWNER);
 
         addImages(meetingPost, meetingPostUris);
         meetingPost.addParticipant(participant);
 
         MeetingPost saved = meetingPostRepository.save(meetingPost);
 
-        quartzService.scheduleDeadlineEvent(saved.getId().toString(), TimeUtil.localDateTimeToDate(saved.getPostDeadLine().getPostDeadline(), clock));
+        quartzService.scheduleDeadlineEvent(saved.getId().toString(),
+                TimeUtil.localDateTimeToDate(saved.getPostDeadLine().getPostDeadline(), clock));
+        return meetingPost;
     }
 
     @Override
     @Transactional(readOnly = true)
     public MeetingPost findById(Long postId) {
         return meetingPostRepository.findByIdWithInfo(postId)
+                .orElseThrow(() -> new MeetingException(MEETING_POST_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public MeetingPost findByIdWithLock(Long postId) {
+        return meetingPostRepository.findByIdWithLock(postId)
                 .orElseThrow(() -> new MeetingException(MEETING_POST_NOT_FOUND));
     }
 
