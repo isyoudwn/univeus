@@ -11,6 +11,4 @@ public class ImageResponse {
             return new ImageUris(uris);
         }
     }
-
-    ;
 }

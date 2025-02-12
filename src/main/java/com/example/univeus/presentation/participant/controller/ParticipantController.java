@@ -24,7 +24,6 @@ public class ParticipantController {
 
     private final ParticipantService participantService;
 
-
     @MemberOnly
     @PostMapping("/{postId}")
     public ResponseEntity<Response<String>> participate(
@@ -34,7 +33,8 @@ public class ParticipantController {
         Long memberId = accessor.getMemberId();
         participantService.participate(Long.valueOf(postId), memberId);
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .ok()
                 .body(Response.success(
                         PARTICIPANT_SUCCESS.getCode(),
                         PARTICIPANT_SUCCESS.getMessage()
@@ -50,7 +50,8 @@ public class ParticipantController {
         Long memberId = accessor.getMemberId();
         participantService.removeParticipant(Long.valueOf(postId), memberId);
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .ok()
                 .body(Response.success(
                         REMOVE_PARTICIPANT_SUCCESS.getCode(),
                         REMOVE_PARTICIPANT_SUCCESS.getMessage()

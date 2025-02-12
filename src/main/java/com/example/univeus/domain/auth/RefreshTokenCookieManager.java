@@ -3,7 +3,6 @@ package com.example.univeus.domain.auth;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.exception.TokenException;
 import com.example.univeus.domain.auth.repository.RefreshTokenRepository;
-import com.example.univeus.domain.auth.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import java.time.Duration;
 import java.util.Arrays;

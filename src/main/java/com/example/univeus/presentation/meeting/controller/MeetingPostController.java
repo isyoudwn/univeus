@@ -6,11 +6,8 @@ import com.example.univeus.common.response.Response;
 import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.auth.model.Accessor;
 import com.example.univeus.domain.meeting.service.MeetingPostService;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
-import com.example.univeus.presentation.meeting.dto.request.MainPageRequest;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest;
-import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
+import com.example.univeus.presentation.meeting.dto.request.MeetingPostRequest;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,21 +21,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/meeting")
+@RequestMapping("/api/v1/meetings")
 @RequiredArgsConstructor
 public class MeetingPostController {
 
     private final MeetingPostService meetingPostService;
 
     @MemberOnly
-    @PostMapping("/post")
+    @PostMapping("")
     public ResponseEntity<Response<String>> writeMeetingPost(
             @Auth Accessor accessor,
-            @Valid @RequestBody MeetingWriteRequest.MeetingPostWrite meetingPostWrite
+            @Valid @RequestBody MeetingPostRequest.Write writeRequest
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.writePost(memberId, meetingPostWrite.meetingPostContent(),
-                meetingPostWrite.meetingPostUris());
+        meetingPostService.writePost(memberId, writeRequest.meetingPostContent(),
+                writeRequest.meetingPostUris());
+
         return ResponseEntity
                 .ok()
                 .body(Response.success(
@@ -47,8 +45,25 @@ public class MeetingPostController {
                 ));
     }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<Response<MeetingPostResponse.MeetingPost>> getPost(
+            @Auth Accessor accessor,
+            @PathVariable String postId
+    ) {
+        Long memberId = accessor.getMemberId();
+        MeetingPostResponse.MeetingPost meetingPost = meetingPostService.readPost(memberId, Long.valueOf(postId));
+
+        return ResponseEntity
+                .ok()
+                .body(Response.success(
+                        ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                        ResponseMessage.READ_MEETING_SUCCESS.getCode(),
+                        meetingPost
+                ));
+    }
+
     @MemberOnly
-    @DeleteMapping("/post/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Response<String>> deleteMeetingPost(
             @Auth Accessor accessor,
             @PathVariable String postId
@@ -65,14 +80,14 @@ public class MeetingPostController {
     }
 
     @MemberOnly
-    @PatchMapping("/post/{postId}")
+    @PatchMapping("/{postId}")
     public ResponseEntity<Response<String>> updateMeetingPost(
             @Auth Accessor accessor,
             @PathVariable String postId,
-            @Valid @RequestBody MeetingUpdateRequest.MeetingPostUpdate meetingPostUpdate
+            @Valid @RequestBody MeetingPostRequest.Update updateRequest
     ) {
         Long memberId = accessor.getMemberId();
-        meetingPostService.updatePost(memberId, Long.valueOf(postId), meetingPostUpdate);
+        meetingPostService.updatePost(memberId, Long.valueOf(postId), updateRequest);
 
         return ResponseEntity
                 .ok()
@@ -80,59 +95,5 @@ public class MeetingPostController {
                         ResponseMessage.UPDATE_MEETING_SUCCESS.getCode(),
                         ResponseMessage.UPDATE_MEETING_SUCCESS.getMessage()
                 ));
-    }
-
-    @GetMapping("/posts")
-    public ResponseEntity<Response<MainPageResponse>> getMainPages(
-            MainPageRequest.MainPageCursor mainPageCursor
-    ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPosts(
-                mainPageCursor.id(),
-                mainPageCursor.category(),
-                Integer.parseInt(mainPageCursor.size()));
-
-        return ResponseEntity.ok()
-                .body(Response.success(
-                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
-                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
-                        meetingPosts
-                ));
-    }
-
-    @GetMapping("/offsets")
-    public ResponseEntity<Response<MainPageResponse>> getMainPagesByOffset(
-            MainPageRequest.MainPageOffset mainPageOffset
-    ) {
-        MainPageResponse meetingPosts = meetingPostService.getMeetingPostsOffset(
-                mainPageOffset.category(),
-                Integer.parseInt(mainPageOffset.page()),
-                Integer.parseInt(mainPageOffset.size()));
-
-        return ResponseEntity.ok()
-                .body(Response.success(
-                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getCode(),
-                        ResponseMessage.MAIN_PAGE_RENDERING_SUCCESS.getMessage(),
-                        meetingPosts
-                ));
-    }
-
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<Response<MeetingPostDetailResponse>> getPost(
-            @Auth Accessor accessor,
-            @PathVariable String postId
-    ) {
-        Long memberId = 1L;
-//        Long memberId = accessor.getMemberId();
-        MeetingPostDetailResponse meetingPostDetail = meetingPostService.readPost(memberId, Long.valueOf(postId));
-
-        return ResponseEntity
-                .ok()
-                .body(
-                        Response.success(
-                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
-                                ResponseMessage.READ_MEETING_SUCCESS.getCode(),
-                                meetingPostDetail
-                        ));
-
     }
 }

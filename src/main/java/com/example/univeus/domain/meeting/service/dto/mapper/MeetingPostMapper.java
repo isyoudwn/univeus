@@ -7,10 +7,10 @@ import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingSchedule;
 import com.example.univeus.domain.meeting.model.PostDeadline;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailDTO;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetail;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
+import com.example.univeus.presentation.meeting.dto.request.MeetingPostRequest;
 import java.time.LocalDateTime;
 
 public class MeetingPostMapper {
@@ -40,7 +40,7 @@ public class MeetingPostMapper {
         return MeetingSchedule.of(TimeUtil.parseToLocalDateTime(meetingSchedule), now, postDeadline);
     }
 
-    public static MeetingPost toMeetingPost(Member member, MeetingPostContent meetingPostContent, LocalDateTime now) {
+    public static MeetingPost toMeetingPost(Member member, MeetingPostRequest.MeetingPostContent meetingPostContent, LocalDateTime now) {
         Coordinate coordinate = toCoordinate(meetingPostContent.latitude(), meetingPostContent.longitude());
         Gender gender = toGender(meetingPostContent.genderLimit());
         Location location = toLocation(meetingPostContent.address(), coordinate);
@@ -60,7 +60,7 @@ public class MeetingPostMapper {
                 meetingCategory);
     }
 
-    public static MeetingPostDetailDTO toMeetingPostDetail(MeetingPostContent meetingPostContent, LocalDateTime now) {
+    public static MeetingPostDetail toMeetingPostDetail(MeetingPostRequest.MeetingPostContent meetingPostContent, LocalDateTime now) {
 
         Coordinate coordinate = toCoordinate(meetingPostContent.latitude(), meetingPostContent.longitude());
         Gender gender = toGender(meetingPostContent.genderLimit());
@@ -69,7 +69,7 @@ public class MeetingPostMapper {
         PostDeadline postDeadline = toPostDeadline(meetingPostContent.postDeadline(), now);
         MeetingSchedule meetingSchedule = toMeetingSchedule(meetingPostContent.meetingSchedule(), postDeadline, now);
 
-        return new MeetingPostDetailDTO(
+        return new MeetingPostDetail(
                 meetingPostContent.title(),
                 meetingPostContent.body(),
                 gender,

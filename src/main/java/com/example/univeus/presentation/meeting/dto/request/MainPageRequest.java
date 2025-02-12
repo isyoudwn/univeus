@@ -1,17 +1,17 @@
 package com.example.univeus.presentation.meeting.dto.request;
 
+import com.example.univeus.domain.meeting.model.MeetingCategory;
+
 public class MainPageRequest {
 
     public record MainPageCursor(
-            String id,
-            String category,
-            String size
+            Long id,
+            MeetingCategory meetingCategory
     ) {
     }
 
     public record MainPageOffset(
             String page,
-            String size,
             String category
     ) {
     }

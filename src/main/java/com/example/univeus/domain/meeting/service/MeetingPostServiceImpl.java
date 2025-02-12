@@ -5,37 +5,23 @@ import static com.example.univeus.common.response.ResponseMessage.MEMBER_BAD_REQ
 
 import com.example.univeus.common.util.TimeUtil;
 import com.example.univeus.domain.meeting.exception.MeetingException;
-import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import com.example.univeus.domain.meeting.model.MeetingPostImage;
 import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.ImageUriDTO;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailDTO;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetailResponse;
+import com.example.univeus.domain.meeting.service.dto.MeetingPostDTO.MeetingPostDetail;
 import com.example.univeus.domain.meeting.service.dto.mapper.MeetingPostMapper;
 import com.example.univeus.domain.member.exception.MemberException;
 import com.example.univeus.domain.member.model.Member;
 import com.example.univeus.domain.member.service.MemberService;
-import com.example.univeus.domain.meeting.service.dto.MeetingPostImageDTO;
-import com.example.univeus.domain.participant.Participant;
-import com.example.univeus.domain.participant.ParticipantRole;
+import com.example.univeus.domain.participant.model.Participant;
+import com.example.univeus.domain.participant.model.ParticipantRole;
 import com.example.univeus.domain.scheduler.service.QuartzService;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.DeletedPostImages;
-import com.example.univeus.presentation.meeting.dto.request.MeetingUpdateRequest.MeetingPostUpdate;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostContent;
-import com.example.univeus.presentation.meeting.dto.request.MeetingWriteRequest.MeetingPostUris;
-import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto;
-import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPage;
-import com.example.univeus.presentation.meeting.dto.response.MeetingPostDto.MainPageResponse;
-import com.example.univeus.presentation.member.dto.request.MemberDto.Profile;
+import com.example.univeus.presentation.meeting.dto.request.MeetingPostRequest;
+import com.example.univeus.presentation.meeting.dto.response.MeetingPostResponse;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +50,7 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     @Override
     @Transactional
-    public void writePost(Long writerId, MeetingPostContent meetingPostContent, MeetingPostUris meetingPostUris) {
+    public void writePost(Long writerId, MeetingPostRequest.MeetingPostContent meetingPostContent, MeetingPostRequest.MeetingPostImagesUris meetingPostUris) {
         LocalDateTime now = LocalDateTime.now(clock);
         Member currentMember = memberService.findById(writerId);
         MeetingPost meetingPost = MeetingPostMapper.toMeetingPost(currentMember, meetingPostContent, now);
@@ -87,21 +73,20 @@ public class MeetingPostServiceImpl implements MeetingPostService {
 
     @Override
     @Transactional
-    public void updatePost(Long memberId, Long postId, MeetingPostUpdate meetingPostUpdate) {
+    public void updatePost(Long memberId, Long postId, MeetingPostRequest.Update meetingPostUpdate) {
         Member currentMember = memberService.findById(memberId);
         MeetingPost meetingPost = findById(postId);
 
         if (!currentMember.isMine(meetingPost.getWriter())) {
             throw new MemberException(MEMBER_BAD_REQUEST);
         }
-        ;
 
         deleteImages(meetingPost, meetingPostUpdate.deletedPostImages());
         addImages(meetingPost, meetingPostUpdate.newMeetingPostUris());
 
-        MeetingPostContent meetingPostContent = meetingPostUpdate.meetingPostContent();
+        MeetingPostRequest.MeetingPostContent meetingPostContent = meetingPostUpdate.meetingPostContent();
         LocalDateTime now = LocalDateTime.now(clock);
-        MeetingPostDetailDTO meetingPostDetail = MeetingPostMapper.toMeetingPostDetail(
+        MeetingPostDetail meetingPostDetail = MeetingPostMapper.toMeetingPostDetail(
                 meetingPostContent, now);
 
         meetingPost.update(
@@ -120,15 +105,15 @@ public class MeetingPostServiceImpl implements MeetingPostService {
         quartzService.updateSchedule(postId.toString(), TimeUtil.localDateTimeToDate(meetingPostDetail.postDeadline().getPostDeadline(), clock));
     }
 
-    private void deleteImages(MeetingPost meetingPost, DeletedPostImages deletedPostImages) {
+    private void deleteImages(MeetingPost meetingPost, MeetingPostRequest.DeletedPostImages deletedPostImages) {
         // 상위 메서드의 트랜잭션에 합류
-        for (MeetingPostImageDTO image : deletedPostImages.images()) {
-            Long postImageId = Long.valueOf(image.id());
+        for (String id : deletedPostImages.ids()) {
+            Long postImageId = Long.valueOf(id);
             meetingPost.deleteImages(postImageId);
         }
     }
 
-    private void addImages(MeetingPost meetingPost, MeetingPostUris meetingPostUris) {
+    private void addImages(MeetingPost meetingPost, MeetingPostRequest.MeetingPostImagesUris meetingPostUris) {
         // 상위 메서드의 트랜잭션에 합류
         for (String uri : meetingPostUris.uris()) {
             MeetingPostImage meetingPostImage = MeetingPostImage.create(uri);
@@ -137,83 +122,13 @@ public class MeetingPostServiceImpl implements MeetingPostService {
     }
 
     @Override
-    public MainPageResponse getMeetingPosts(String cursor, String category, int size) {
-        Pageable pageable = PageRequest.of(0, size); // 페이지 크기만 지정
-
-        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
-        Long findCursor = (!cursor.equals("none")) ? Long.valueOf(cursor) : null;
-
-        List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory, findCursor,
-                pageable);
-
-        List<MainPage> mainPages = meetingPosts.stream().map(meetingPost -> {
-            Member writer = meetingPost.getWriter();
-            Profile profile = Profile.of(
-                    writer.getNickname(), writer.getDepartment().getDepartment(),
-                    writer.getGender().getGender(), writer.getStudentId());
-
-            return new MainPage(
-                    meetingPost.getTitle(),
-                    meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus(),
-                    meetingPost.getGenderLimit().getGender(),
-                    meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
-                    meetingPost.getMeetingCategory(),
-                    profile);
-        }).toList();
-
-        if (meetingPosts.isEmpty()) {
-            return new MainPageResponse(mainPages, "NONE", false);
-        }
-
-        String nextCursor = meetingPosts.getLast().getId().toString();
-        return new MainPageResponse(mainPages, nextCursor, true);
-    }
-
-    @Override
-    public MainPageResponse getMeetingPostsOffset(String category, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
-
-        Page<MeetingPost> meetingPostPage = meetingPostRepository.findByCategoryAndOffset(meetingCategory, pageable);
-
-        List<MeetingPostDto.MainPage> result = meetingPostPage.getContent().stream().map(meetingPost -> {
-
-            Member writer = meetingPost.getWriter();
-            Profile profile = Profile.of(
-                    writer.getNickname(),
-                    writer.getDepartment().getDepartment(),
-                    writer.getGender().getGender(),
-                    writer.getStudentId()
-            );
-
-            return new MeetingPostDto.MainPage(
-                    meetingPost.getTitle(),
-                    meetingPost.getJoinLimit(),
-                    meetingPost.getMeetingPostStatus(),
-                    meetingPost.getGenderLimit().getGender(),
-                    meetingPost.getPostDeadLine().getPostDeadline(),
-                    meetingPost.getMeetingSchedule().getMeetingSchedule(),
-                    meetingPost.getMeetingCategory(),
-                    profile
-            );
-        }).toList();
-
-        boolean hasNext = meetingPostPage.hasNext();
-        int nextPage = hasNext ? page + 1 : -1;
-
-        return new MainPageResponse(result, String.valueOf(nextPage), hasNext);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public MeetingPostDetailResponse readPost(Long memberId, Long postId) {
+    public MeetingPostResponse.MeetingPost readPost(Long memberId, Long postId) {
         MeetingPost meetingPost = findById(postId);
         Member currentMember = memberService.findById(memberId);
         Boolean isMine = currentMember.isMine(meetingPost.getWriter());
 
-        MeetingPostDetailDTO meetingPostDetail = new MeetingPostDetailDTO(
+        MeetingPostDetail meetingPostDetail = new MeetingPostDetail(
                 meetingPost.getTitle(),
                 meetingPost.getBody(),
                 meetingPost.getGenderLimit(),
@@ -224,11 +139,11 @@ public class MeetingPostServiceImpl implements MeetingPostService {
                 meetingPost.getLocation()
         );
 
-        List<ImageUriDTO> images = meetingPost.getImages()
+        List<String> imageUris = meetingPost.getImages()
                 .stream()
-                .map((image) -> new ImageUriDTO(image.getUri()))
+                .map(MeetingPostImage::getUri)
                 .toList();
 
-        return new MeetingPostDetailResponse(meetingPostDetail, isMine, images);
+        return new MeetingPostResponse.MeetingPost(meetingPostDetail, isMine, imageUris);
     }
 }

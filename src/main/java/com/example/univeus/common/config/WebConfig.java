@@ -1,6 +1,7 @@
 package com.example.univeus.common.config;
 
 import com.example.univeus.common.resolver.AuthenticationResolver;
+import com.example.univeus.common.resolver.MainPageSearchConditionResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuthenticationResolver authenticationResolver;
+    private final MainPageSearchConditionResolver mainPageSearchConditionResolver;
 
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(authenticationResolver);
+        resolvers.add(mainPageSearchConditionResolver);
     }
 
 

@@ -5,7 +5,7 @@ import com.example.univeus.common.response.ResponseMessage;
 import com.example.univeus.domain.meeting.exception.MeetingException;
 import com.example.univeus.domain.member.model.Gender;
 import com.example.univeus.domain.member.model.Member;
-import com.example.univeus.domain.participant.Participant;
+import com.example.univeus.domain.participant.model.Participant;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
