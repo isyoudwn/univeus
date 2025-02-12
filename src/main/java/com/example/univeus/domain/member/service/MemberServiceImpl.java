@@ -89,4 +89,10 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(MEMBER_NICKNAME_DUPLICATED);
         }
     }
+
+    @Override
+    @Transactional
+    public void createMember(Member member) {
+        memberRepository.save(member);
+    }
 }

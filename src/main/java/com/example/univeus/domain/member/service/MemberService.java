@@ -24,4 +24,6 @@ public interface MemberService {
     void registerProfile(Long memberId, MemberDto.Profile profileRequest);
 
     void checkNicknameDuplicated(MemberDto.Nickname nicknameRequest);
+
+    void createMember(Member member);
 }

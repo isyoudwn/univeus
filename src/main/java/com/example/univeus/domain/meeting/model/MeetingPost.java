@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -81,7 +82,6 @@ public class MeetingPost extends BaseEntity {
     @OneToMany(mappedBy = "meetingPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Participant> participants = new ArrayList<>();
-
 
     public static MeetingPost create(Member writer, String title, String body,
                                      Integer joinLimit, Gender genderLimit,
