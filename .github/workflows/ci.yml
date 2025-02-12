@@ -43,7 +43,7 @@ jobs:
         run: chmod +x gradlew  # Gradle 실행 권한 부여
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon  # 프로젝트 빌드
+        run: ./gradlew build --no-daemon --stacktrace --info
 
       - name: Run Tests
         run: ./gradlew test  # 테스트 실행
