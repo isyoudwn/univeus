@@ -20,6 +20,7 @@ jobs:
       MONGO_URI: ${{ secrets.MONGO_URI }}
       SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      REGION: ${{ secrets.REGION }}
 
     steps:
       - name: Checkout Code
