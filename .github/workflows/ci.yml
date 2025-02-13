@@ -21,6 +21,10 @@ jobs:
       SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       REGION: ${{ secrets.REGION }}
+      DB_URL: ${DB_URL}
+      USER_NAME: ${USER_NAME}
+      PASSWORD: ${PASSWORD}
+      DRIVER_CLASS_NAME: ${DRIVER_CLASS_NAME}
 
     steps:
       - name: Checkout Code
