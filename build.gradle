@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
@@ -34,12 +34,51 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.h2database:h2'
 
-	// WebSocket
+	// WebSocket & STOMP
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// jjwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+
+	// Nimbus JOSE + JWT 라이브러리 (JWT 검증 및 디코딩)
+	implementation 'com.nimbusds:nimbus-jose-jwt:9.31'
+
+	// coolSMS(메시지 전송)
+	implementation 'net.nurigo:sdk:4.3.2'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// json 직렬화
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// AWS SDK S3 의존성 추가
+	implementation 'software.amazon.awssdk:s3:2.20.0'
+	implementation 'software.amazon.awssdk:auth:2.20.0'
+
+	// mongo DB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+	// mysql
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Quartz
+	implementation 'org.quartz-scheduler:quartz:2.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
 
 }
 
