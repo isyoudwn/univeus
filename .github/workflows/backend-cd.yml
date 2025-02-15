@@ -6,10 +6,6 @@ on:
     types:
       - closed
 
-env:
-  DOCKERHUB_REPOSITORY: isyoudwn
-  DOCKER_CONTAINER_NAME: univeus-app
-
 jobs:
   # 도커 이미지를 빌드하고 hub에 푸시
   build-and-push:
@@ -65,16 +61,24 @@ jobs:
       # 기존 latest를 previous로 백업
       - name: Back Up Image For Rollback
         run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:latest || true
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:latest ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:previous || true
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:previous || true
+          if docker pull ${{ secrets.DOCKERHUB_USERNAME }}/isyoudwn:latest; then
+            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/isyoudwn:latest \
+              ${{ secrets.DOCKERHUB_USERNAME }}/isyoudwn:previous
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/isyoudwn:previous
+          fi
 
       - name: Docker Image Build And Push
         run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/isyoudwn
+          IMAGE_TAG=${{ github.sha }}-prod
           docker build --build-arg JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_PASSWORD }} \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}-prod \
+          -t $IMAGE_NAME:$IMAGE_TAG \
           -f Dockerfile .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}-prod
+          
+          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
+          
+          docker push $IMAGE_NAME:$IMAGE_TAG
+          docker push $IMAGE_NAME:latest
 
   # EC2에 SSH 접속하여 배포
   deploy-to-ec2:
