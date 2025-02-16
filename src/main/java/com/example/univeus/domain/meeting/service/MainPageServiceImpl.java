@@ -22,10 +22,8 @@ public class MainPageServiceImpl implements MainPageService {
 
     @Override
     public MainPage getMainPage(Long cursor, MeetingCategory meetingCategory) {
-        Pageable pageable = PageRequest.of(0, SIZE); // 페이지 크기만 지정
         List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory,
-                cursor,
-                pageable);
+                cursor);
 
         List<MainPageDetail> mainPages = meetingPosts.stream().map(MainPageMapper::toMainPageDetail).toList();
 
@@ -33,7 +31,7 @@ public class MainPageServiceImpl implements MainPageService {
             return new MainPage(mainPages, "NONE", false);
         }
 
-        String nextCursor = meetingPosts.get(meetingPosts.size() - 1).toString();
+        String nextCursor = String.valueOf(meetingPosts.get(meetingPosts.size() - 1).getId());
         return new MainPage(mainPages, nextCursor, true);
     }
 

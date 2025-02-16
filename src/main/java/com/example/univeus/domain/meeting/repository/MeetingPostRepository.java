@@ -53,11 +53,11 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
             "SELECT p FROM MeetingPost p " +
                     "WHERE (:category IS NULL OR p.meetingCategory = :category) " +
                     "AND (:cursorId IS NULL OR p.id < :cursorId) " +
-                    "ORDER BY p.id DESC"
+                    "ORDER BY p.id DESC " +
+                    "LIMIT 20"
     )
     List<MeetingPost> findByCategoryAndOptionalCursor(
             @Param("category") MeetingCategory category,
-            @Param("cursorId") Long cursorId,
-            Pageable pageable
+            @Param("cursorId") Long cursorId
     );
 }
