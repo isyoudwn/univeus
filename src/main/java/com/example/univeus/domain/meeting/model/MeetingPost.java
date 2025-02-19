@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(indexes = {
-        @Index(name = "idx_category_id", columnList = "meeting_category, id")
+        @Index(name = "idx_category_id", columnList = "meeting_category, id DESC")
 })
 public class MeetingPost extends BaseEntity {
 
