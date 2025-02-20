@@ -1,6 +1,5 @@
 package com.example.univeus.domain.meeting.repository;
 
-import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
 import jakarta.persistence.LockModeType;
 import java.util.List;
@@ -38,26 +37,4 @@ public interface MeetingPostRepository extends JpaRepository<MeetingPost, Long> 
 
     @Deprecated
     Page<MeetingPost> findAllByOrderByIdDesc(Pageable pageable);
-
-    @Query(
-            "SELECT p FROM MeetingPost p " +
-                    "WHERE (:category IS NULL OR p.meetingCategory = :category) " +
-                    "ORDER BY p.id DESC"
-    )
-    Page<MeetingPost> findByCategoryAndOffset(
-            @Param("category") MeetingCategory category,
-            Pageable pageable
-    );
-
-    @Query(
-            "SELECT p FROM MeetingPost p " +
-                    "WHERE (:category IS NULL OR p.meetingCategory = :category) " +
-                    "AND (:cursorId IS NULL OR p.id < :cursorId) " +
-                    "ORDER BY p.id DESC " +
-                    "LIMIT 20"
-    )
-    List<MeetingPost> findByCategoryAndOptionalCursor(
-            @Param("category") MeetingCategory category,
-            @Param("cursorId") Long cursorId
-    );
 }
