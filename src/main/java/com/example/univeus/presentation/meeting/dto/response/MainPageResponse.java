@@ -23,7 +23,9 @@ public class MainPageResponse {
             LocalDateTime postDeadline,
             LocalDateTime meetingSchedule,
             MeetingCategory meetingCategory,
-            MemberDto.Profile writer
+            MemberDto.Profile writer,
+
+            String thumbNail
     ) {
     }
 }

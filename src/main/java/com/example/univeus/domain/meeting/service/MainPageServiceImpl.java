@@ -4,7 +4,7 @@ import static com.example.univeus.presentation.meeting.dto.response.MainPageResp
 
 import com.example.univeus.domain.meeting.model.MeetingCategory;
 import com.example.univeus.domain.meeting.model.MeetingPost;
-import com.example.univeus.domain.meeting.repository.MeetingPostRepository;
+import com.example.univeus.domain.meeting.repository.MainPageRepository;
 import com.example.univeus.domain.meeting.service.dto.mapper.MainPageMapper;
 import com.example.univeus.presentation.meeting.dto.response.MainPageResponse.MainPageDetail;
 import java.util.List;
@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MainPageServiceImpl implements MainPageService {
     private static final Integer SIZE = 20;
-    private final MeetingPostRepository meetingPostRepository;
+    private final MainPageRepository mainPageRepository;
 
     @Override
     public MainPage getMainPage(Long cursor, MeetingCategory meetingCategory) {
-        List<MeetingPost> meetingPosts = meetingPostRepository.findByCategoryAndOptionalCursor(meetingCategory,
+        List<MeetingPost> meetingPosts = mainPageRepository.findByCategoryAndOptionalCursor(meetingCategory,
                 cursor);
 
         List<MainPageDetail> mainPages = meetingPosts.stream().map(MainPageMapper::toMainPageDetail).toList();
@@ -40,7 +40,7 @@ public class MainPageServiceImpl implements MainPageService {
         Pageable pageable = PageRequest.of(page, SIZE);
         MeetingCategory meetingCategory = (!category.equals("none")) ? MeetingCategory.of(category) : null;
 
-        Page<MeetingPost> meetingPostPage = meetingPostRepository.findByCategoryAndOffset(meetingCategory, pageable);
+        Page<MeetingPost> meetingPostPage = mainPageRepository.findByCategoryAndOffset(meetingCategory, pageable);
         List<MainPageDetail> mainPages = meetingPostPage.stream().map(MainPageMapper::toMainPageDetail).toList();
 
         boolean hasNext = meetingPostPage.hasNext();

@@ -2,6 +2,8 @@ package com.example.univeus.domain.auth.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.univeus.common.QueryDslTest;
+import com.example.univeus.common.config.QueryDslConfig;
 import com.example.univeus.domain.auth.model.RefreshToken;
 import com.example.univeus.domain.member.model.Department;
 import com.example.univeus.domain.member.model.Gender;
@@ -11,8 +13,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 @DataJpaTest
+@Import(QueryDslConfig.class)
 class RefreshTokenRepositoryTest {
 
     @Autowired
